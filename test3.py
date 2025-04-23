@@ -57,12 +57,12 @@ class LoginApp:
         self.root.title("Login Portal")
         self.root.geometry("700x400")
         self.root.configure(bg="gray20")
+        self.current_user = None
+        self.current_type = None
 
-        # Header
-        header = tk.Label(root, text="Website Name", font=("Arial", 18, "bold"), bg="gray60")
+        header = tk.Label(root, text="Byte-Sized Builders", font=("Arial", 18, "bold"), bg="gray60")
         header.pack(fill=tk.X, pady=(0, 10))
 
-        # Layout frames
         container = tk.Frame(root, bg="gray70", padx=20, pady=20)
         container.pack(expand=True)
 
@@ -71,13 +71,11 @@ class LoginApp:
         left_frame.pack(side=tk.LEFT, padx=30)
         right_frame.pack(side=tk.RIGHT, padx=30)
 
-        # LEFT SIDE: Role selection
         tk.Label(left_frame, text="Login as", font=("Arial", 12), bg="gray70").pack(anchor=tk.W, pady=(0, 5))
         self.user_type = ttk.Combobox(left_frame, values=["Admin", "Platform Manager", "Homeowner", "Cleaner"], state="readonly")
         self.user_type.current(0)
         self.user_type.pack()
 
-        # RIGHT SIDE: Credentials
         tk.Label(right_frame, text="Username:", font=("Arial", 12), bg="gray70").grid(row=0, column=0, sticky=tk.W)
         self.username_entry = tk.Entry(right_frame, width=30)
         self.username_entry.grid(row=0, column=1, pady=5)
@@ -93,7 +91,10 @@ class LoginApp:
         self.status_label.grid(row=3, column=0, columnspan=2)
 
         self.admin_button = tk.Button(right_frame, text="Open Admin Panel", command=self.open_admin_panel, state=tk.DISABLED, bg="lightgray")
-        self.admin_button.grid(row=4, column=0, columnspan=2, pady=(10, 0))
+        self.admin_button.grid(row=4, column=0, pady=(10, 0))
+
+        self.logout_button = tk.Button(right_frame, text="Logout", command=self.logout, state=tk.DISABLED, bg="lightgray")
+        self.logout_button.grid(row=4, column=1, pady=(10, 0))
 
     def login(self):
         username = self.username_entry.get()
@@ -102,13 +103,29 @@ class LoginApp:
 
         if self.controller.login(username, password, user_type):
             self.status_label.config(text=f"Logged in as {user_type}: {username}", fg="green")
+            self.current_user = username
+            self.current_type = user_type
             if user_type == "Admin":
                 self.admin_button.config(state=tk.NORMAL)
+            self.logout_button.config(state=tk.NORMAL)
         else:
             self.status_label.config(text="Invalid login. Please check credentials.", fg="red")
 
     def open_admin_panel(self):
-        AdminPanel(self.controller)
+        if self.current_type == "Admin":
+            AdminPanel(self.controller)
+        else:
+            messagebox.showerror("Access Denied", "Only Admin users can access the Admin Panel.")
+
+    def logout(self):
+        self.username_entry.delete(0, tk.END)
+        self.password_entry.delete(0, tk.END)
+        self.user_type.current(0)
+        self.status_label.config(text="Logged out successfully.", fg="blue")
+        self.admin_button.config(state=tk.DISABLED)
+        self.logout_button.config(state=tk.DISABLED)
+        self.current_user = None
+        self.current_type = None
 
 # Admin Panel
 class AdminPanel:
