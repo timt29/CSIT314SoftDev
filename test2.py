@@ -2,54 +2,63 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
 
-# 🟢 ENTITY: User model and database access
-class UserRepository:
-    def __init__(self, db_path="users.db"):
-        self.conn = sqlite3.connect(db_path)
-        self.cursor = self.conn.cursor()
-        self._create_user_table()
+# 🟢 ENTITY
+class UserAccount:
+    def __init__(self, username, user_type):
+        self.username = username
+        self.user_type = user_type
 
-    def _create_user_table(self):
-        self.cursor.execute("""
+    @staticmethod
+    def login(user_id, password, profile_type):
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT username, user_type FROM users 
+            WHERE username=? AND password=? AND user_type=?
+        """, (user_id, password, profile_type))
+        result = cursor.fetchone()
+        conn.close()
+
+        if result:
+            return UserAccount(username=result[0], user_type=result[1])
+        else:
+            raise ValueError("Invalid credentials")
+
+    @staticmethod
+    def setup_database():
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 username TEXT PRIMARY KEY,
                 password TEXT NOT NULL,
                 user_type TEXT NOT NULL
             )
         """)
-        # Default user
-        self.cursor.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", ("admin", "admin", "Admin"))
-        self.conn.commit()
+        cursor.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", ("admin", "admin", "Admin"))
+        conn.commit()
+        conn.close()
 
-    def validate_user(self, username, password, user_type):
-        self.cursor.execute(
-            "SELECT * FROM users WHERE username=? AND password=? AND user_type=?",
-            (username, password, user_type)
-        )
-        return self.cursor.fetchone()
+# 🔵 CONTROLLER
+class UserLoginController:
+    def login(self, user_id, password, profile_type):
+        try:
+            return UserAccount.login(user_id, password, profile_type)
+        except ValueError as e:
+            return str(e)
 
-    def close(self):
-        self.conn.close()
-
-# 🔵 CONTROLLER: Business logic between UI and Entity
-class AuthController:
-    def __init__(self, user_repository):
-        self.user_repo = user_repository
-
-    def login(self, username, password, user_type):
-        return self.user_repo.validate_user(username, password, user_type)
-
-# 🟡 BOUNDARY: UI
-class LoginApp:
+# 🟡 BOUNDARY
+class UserLoginPage:
     def __init__(self, root, controller):
         self.root = root
         self.controller = controller
-        self.root.title("Login App (BCE)")
+        self.root.title("Login System BCE")
         self.root.geometry("400x200")
 
-        # UI Layout
+        # UI components
         self.left_frame = tk.Frame(self.root)
         self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
+
         tk.Label(self.left_frame, text="Select User Type:").pack(anchor=tk.W)
         self.user_type = ttk.Combobox(self.left_frame, values=["Admin", "Cleaner", "Homeowner", "Platform Management"])
         self.user_type.current(0)
@@ -57,6 +66,7 @@ class LoginApp:
 
         self.right_frame = tk.Frame(self.root)
         self.right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
         tk.Label(self.right_frame, text="Username:").grid(row=0, column=0, sticky=tk.W)
         self.username_entry = tk.Entry(self.right_frame)
         self.username_entry.grid(row=0, column=1)
@@ -77,14 +87,16 @@ class LoginApp:
     def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        user_type = self.user_type.get()
+        profile_type = self.user_type.get()
 
-        if self.controller.login(username, password, user_type):
-            self.status_label.config(text=f"Logged in as {user_type}: {username}", fg="green")
+        result = self.controller.login(username, password, profile_type)
+
+        if isinstance(result, UserAccount):
+            self.status_label.config(text=f"Logged in as {result.user_type}: {result.username}", fg="green")
             self.login_button.config(state=tk.DISABLED)
             self.logout_button.config(state=tk.NORMAL)
         else:
-            messagebox.showerror("Login Failed", "Invalid username, password, or user type.")
+            messagebox.showerror("Login Failed", result)
 
     def logout(self):
         self.username_entry.delete(0, tk.END)
@@ -93,16 +105,12 @@ class LoginApp:
         self.login_button.config(state=tk.NORMAL)
         self.logout_button.config(state=tk.DISABLED)
 
-# Run the app
+# 🎬 App start
 if __name__ == "__main__":
+    UserAccount.setup_database()  # Ensure DB is ready
+
     root = tk.Tk()
-    repo = UserRepository()
-    controller = AuthController(repo)
-    app = LoginApp(root, controller)
+    controller = UserLoginController()
+    app = UserLoginPage(root, controller)
 
-    def on_closing():
-        repo.close()
-        root.destroy()
-
-    root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
