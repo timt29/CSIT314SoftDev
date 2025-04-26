@@ -26,7 +26,7 @@ CREATE TABLE `homeowner` (
   `userid` int NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `name` varchar(50) NOT NULL,
-  `dob` datetime DEFAULT CURRENT_TIMESTAMP,
+  `dob` date DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `housingtype` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`userid`)
@@ -39,6 +39,7 @@ CREATE TABLE `homeowner` (
 
 LOCK TABLES `homeowner` WRITE;
 /*!40000 ALTER TABLE `homeowner` DISABLE KEYS */;
+INSERT INTO `homeowner` VALUES (1,'abc','Vernon','1999-03-28','vernongay@gmail.com','landed');
 /*!40000 ALTER TABLE `homeowner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-26 12:44:12
+-- Dump completed on 2025-04-26 13:06:47
