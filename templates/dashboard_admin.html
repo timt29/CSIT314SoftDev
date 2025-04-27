@@ -74,17 +74,25 @@
             background-color: #218838;
         }
         .action-button {
-            background-color: #17a2b8;
+            background-color: #ffc107;
+            color: black;
             margin-right: 5px;
         }
         .action-button:hover {
-            background-color: #117a8b;
+            background-color: #e0a800;
         }
         .suspend-button {
             background-color: #dc3545;
+            color: white;
         }
         .suspend-button:hover {
             background-color: #c82333;
+        }
+        #user-detail, #update-user-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -119,12 +127,14 @@
         if (tab === "create") {
             document.getElementById('content').innerHTML = `
                 <h3>Create New User</h3>
-                <input id="create-username" placeholder="Username"><br>
-                <input id="create-password" type="password" placeholder="Password"><br>
-                <input id="create-role" placeholder="Role"><br>
-                <input id="create-email" placeholder="Email"><br>
-                <input id="create-dob" type="date" placeholder="DOB"><br>
-                <button onclick="createUser()">Create User</button>
+                <form id="create-form">
+                    <input id="create-username" placeholder="Username" required><br>
+                    <input id="create-password" type="password" placeholder="Password" required><br>
+                    <input id="create-role" placeholder="Role" required><br>
+                    <input id="create-email" placeholder="Email" required><br>
+                    <input id="create-dob" type="date" required><br>
+                    <button type="button" onclick="createUser()">Create User</button>
+                </form>
             `;
         } else if (tab === "view") {
             loadUserTable();
@@ -133,7 +143,7 @@
 
     function createUser() {
         const username = document.getElementById("create-username").value;
-        const password = document.getElementById("create-password").value; // just for form (password not stored now)
+        const password = document.getElementById("create-password").value; // simulated
         const role = document.getElementById("create-role").value;
         const email = document.getElementById("create-email").value;
         const dob = document.getElementById("create-dob").value;
@@ -144,7 +154,7 @@
         }
 
         users.push({ username, role, email, dob, status: "Active" });
-        alert("User Created!");
+        alert("User Created Successfully!");
         showTab('view');
     }
 
@@ -170,23 +180,35 @@
                     <td>${user.role}</td>
                     <td id="status-${index}">${user.status}</td>
                     <td>
+                        <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
                         <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
                     </td>
                 </tr>`;
         });
 
-        html += `</tbody></table>`;
+        html += `</tbody></table>
+            <div id="user-detail"></div>
+            <div id="update-user-form"></div>
+        `;
         document.getElementById('content').innerHTML = html;
     }
 
     function viewUser(index) {
         const user = users[index];
-        alert(`User Details:\n\nUsername: ${user.username}\nRole: ${user.role}\nEmail: ${user.email}\nDOB: ${user.dob}\nStatus: ${user.status}`);
+        document.getElementById('user-detail').innerHTML = `
+            <h3>User Details</h3>
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Role:</strong> ${user.role}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>DOB:</strong> ${user.dob}</p>
+            <p><strong>Status:</strong> ${user.status}</p>
+        `;
     }
 
     function suspendUser(index) {
         users[index].status = "Suspended";
         document.getElementById(`status-${index}`).innerText = "Suspended";
+        viewUser(index);
         alert("User Suspended Successfully!");
     }
 
@@ -204,6 +226,26 @@
         });
     }
 
+    function showUpdateForm(index) {
+        const user = users[index];
+        document.getElementById('update-user-form').innerHTML = `
+            <h3>Update User - ${user.username}</h3>
+            <input id="update-role" value="${user.role}" placeholder="Role"><br>
+            <input id="update-email" value="${user.email}" placeholder="Email"><br>
+            <input id="update-dob" value="${user.dob}" type="date"><br>
+            <button onclick="updateUser(${index})">Save Changes</button>
+        `;
+    }
+
+    function updateUser(index) {
+        users[index].role = document.getElementById('update-role').value;
+        users[index].email = document.getElementById('update-email').value;
+        users[index].dob = document.getElementById('update-dob').value;
+
+        alert("User Updated Successfully!");
+        loadUserTable();
+    }
+
     window.onload = () => {
         showTab('view');
     };
@@ -211,3 +253,4 @@
 
 </body>
 </html>
+
