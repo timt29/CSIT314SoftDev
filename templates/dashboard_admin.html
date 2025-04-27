@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tabs {
+            margin: 20px 30px;
+        }
+        .tab {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .tab:hover {
+            background: #0056b3;
+        }
+        #content {
+            margin: 20px 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        input[type="text"], input[type="password"], input[type="date"] {
+            width: 80%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .action-button {
+            background-color: #17a2b8;
+            margin-right: 5px;
+        }
+        .action-button:hover {
+            background-color: #117a8b;
+        }
+        .suspend-button {
+            background-color: #dc3545;
+        }
+        .suspend-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div><h2>Admin Dashboard</h2></div>
+    <div><button onclick="logout()">Logout</button></div>
+</div>
+
+<div class="tabs">
+    <div class="tab" onclick="showTab('create')">Create User</div>
+    <div class="tab" onclick="showTab('view')">View Users</div>
+</div>
+
+<div id="content">
+    <!-- Dynamic content will be loaded here -->
+</div>
+
+<script>
+    // Sample test users
+    let users = [
+        { username: "admin", role: "Admin", email: "admin@example.com", dob: "1990-01-01", status: "Active" },
+        { username: "cleaner1", role: "Cleaner", email: "cleaner1@example.com", dob: "1995-05-05", status: "Active" }
+    ];
+
+    function logout() {
+        window.location.href = "login.html";
+    }
+
+    function showTab(tab) {
+        if (tab === "create") {
+            document.getElementById('content').innerHTML = `
+                <h3>Create New User</h3>
+                <input id="create-username" placeholder="Username"><br>
+                <input id="create-password" type="password" placeholder="Password"><br>
+                <input id="create-role" placeholder="Role"><br>
+                <input id="create-email" placeholder="Email"><br>
+                <input id="create-dob" type="date" placeholder="DOB"><br>
+                <button onclick="createUser()">Create User</button>
+            `;
+        } else if (tab === "view") {
+            loadUserTable();
+        }
+    }
+
+    function createUser() {
+        const username = document.getElementById("create-username").value;
+        const password = document.getElementById("create-password").value; // just for form (password not stored now)
+        const role = document.getElementById("create-role").value;
+        const email = document.getElementById("create-email").value;
+        const dob = document.getElementById("create-dob").value;
+
+        if (!username || !role || !email || !dob) {
+            alert("Please fill all fields!");
+            return;
+        }
+
+        users.push({ username, role, email, dob, status: "Active" });
+        alert("User Created!");
+        showTab('view');
+    }
+
+    function loadUserTable() {
+        let html = `
+            <h3>Manage Users</h3>
+            <input type="text" id="search-box" placeholder="Search username..." onkeyup="searchUser()">
+            <table id="user-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        users.forEach((user, index) => {
+            html += `
+                <tr>
+                    <td><a href="#" onclick="viewUser(${index})">${user.username}</a></td>
+                    <td>${user.role}</td>
+                    <td id="status-${index}">${user.status}</td>
+                    <td>
+                        <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
+                    </td>
+                </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        document.getElementById('content').innerHTML = html;
+    }
+
+    function viewUser(index) {
+        const user = users[index];
+        alert(`User Details:\n\nUsername: ${user.username}\nRole: ${user.role}\nEmail: ${user.email}\nDOB: ${user.dob}\nStatus: ${user.status}`);
+    }
+
+    function suspendUser(index) {
+        users[index].status = "Suspended";
+        document.getElementById(`status-${index}`).innerText = "Suspended";
+        alert("User Suspended Successfully!");
+    }
+
+    function searchUser() {
+        const input = document.getElementById('search-box').value.toLowerCase();
+        const rows = document.querySelectorAll("#user-table tbody tr");
+
+        rows.forEach(row => {
+            const username = row.querySelector("td").innerText.toLowerCase();
+            if (username.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    window.onload = () => {
+        showTab('view');
+    };
+</script>
+
+</body>
+</html>
