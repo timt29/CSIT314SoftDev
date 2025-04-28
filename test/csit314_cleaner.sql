@@ -26,7 +26,7 @@ CREATE TABLE `cleaner` (
   `userid` int NOT NULL,
   `password` varchar(45) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
-  `dob` datetime DEFAULT NULL,
+  `dob` date DEFAULT NULL,
   `experience` double DEFAULT NULL,
   `service` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`userid`)
@@ -39,6 +39,7 @@ CREATE TABLE `cleaner` (
 
 LOCK TABLES `cleaner` WRITE;
 /*!40000 ALTER TABLE `cleaner` DISABLE KEYS */;
+INSERT INTO `cleaner` VALUES (100,'david','david','1980-10-11',3,'cleaning'),(101,'alice','alice','1999-04-20',1,'housecleaning'),(102,'nancy','nancy','1985-05-22',5,'laundry'),(103,'mary','mary','1960-12-30',20,'all');
 /*!40000 ALTER TABLE `cleaner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-26 13:06:47
+-- Dump completed on 2025-04-28 16:45:00

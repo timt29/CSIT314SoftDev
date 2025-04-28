@@ -39,7 +39,7 @@ CREATE TABLE `homeowner` (
 
 LOCK TABLES `homeowner` WRITE;
 /*!40000 ALTER TABLE `homeowner` DISABLE KEYS */;
-INSERT INTO `homeowner` VALUES (1,'abc','Vernon','1999-03-28','vernongay@gmail.com','landed');
+INSERT INTO `homeowner` VALUES (1,'vernon','Vernon','2000-06-09','vernongay@gmail.com','landed'),(200,'ali','ali','1993-07-21','ali@gmail.com','2room'),(201,'mark','mark','1990-10-10','mark@gmail.com','landed'),(202,'daisy','daisy','1983-08-03','daisy@gmail.com','5room exec');
 /*!40000 ALTER TABLE `homeowner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-26 13:06:47
+-- Dump completed on 2025-04-28 16:45:00

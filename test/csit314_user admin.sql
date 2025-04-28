@@ -26,7 +26,7 @@ CREATE TABLE `user admin` (
   `userid` int NOT NULL,
   `password` varchar(45) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
-  `dob` datetime DEFAULT NULL,
+  `dob` date DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -38,6 +38,7 @@ CREATE TABLE `user admin` (
 
 LOCK TABLES `user admin` WRITE;
 /*!40000 ALTER TABLE `user admin` DISABLE KEYS */;
+INSERT INTO `user admin` VALUES (1,'vernon','vernon','2000-06-09','vernongay@gmail.com'),(2,'tim','timothy','1999-11-11','timdog@gmail.com'),(3,'daryl','daryl','2000-05-01','daryl@gmail.com');
 /*!40000 ALTER TABLE `user admin` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-26 13:06:46
+-- Dump completed on 2025-04-28 16:45:00

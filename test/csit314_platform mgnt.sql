@@ -26,7 +26,7 @@ CREATE TABLE `platform mgnt` (
   `userid` int NOT NULL,
   `password` varchar(45) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
-  `dob` datetime DEFAULT NULL,
+  `dob` date DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -38,6 +38,7 @@ CREATE TABLE `platform mgnt` (
 
 LOCK TABLES `platform mgnt` WRITE;
 /*!40000 ALTER TABLE `platform mgnt` DISABLE KEYS */;
+INSERT INTO `platform mgnt` VALUES (4,'yy','yiyang','2000-11-22','yiyang@gmail.com');
 /*!40000 ALTER TABLE `platform mgnt` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-26 13:06:46
+-- Dump completed on 2025-04-28 16:45:00
