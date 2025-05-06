@@ -90,11 +90,11 @@
 </section>
 
 <section class="products">
-  {% for cleaner in cleaners %}
+  {% for services in services %}
   <div class="product-card">
-    <h3>{{ cleaner.name }}</h3>
-    <p>Experience: {{ cleaner.experience }} years</p>
-    <p>Service: {{ cleaner.service }}</p>
+    <h3>{{ services.name }}</h3>
+    <p>Experience: {{ services.experience }} years</p>
+    <p>Service: {{ services.service }}</p>
     <button>Book Now</button>
   </div>
   {% endfor %}

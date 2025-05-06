@@ -1,6 +1,6 @@
 import mysql.connector
 
-def get_cleaners():
+def get_services():
     try:
         conn = mysql.connector.connect(
             host="localhost",
