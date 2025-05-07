@@ -1,0 +1,9 @@
+<ul>
+    {% for cleaner in cleaners %}
+        <li>
+            {{ cleaner.name }} - {{ cleaner.location }}
+            <a href="/favourite/{{ cleaner.id }}">Save to Favourites</a>
+        </li>
+    {% endfor %}
+    </ul>
+    

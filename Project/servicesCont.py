@@ -11,7 +11,7 @@ def get_services():
             auth_plugin='mysql_native_password'
         )
         cursor = conn.cursor(dictionary=True)  # Return results as dictionaries for easier access
-        cursor.execute("SELECT userid, name, dob, experience, service FROM cleaner")
+        cursor.execute("SELECT  name, pricing, duration FROM service")
         cleaners = cursor.fetchall()
         return cleaners
     except mysql.connector.Error as err:

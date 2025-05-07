@@ -84,10 +84,12 @@
   </nav>
 </header>
 
-<section class="hero">
-  <h2>Cleaning Services</h2>
-  <p>Place to find online cleaning services</p>
-</section>
+<form action="/HOresults" method="post">
+  <label>Service:</label>
+  <input type="text" name="location">
+  <button type="submit">Search</button>
+</form>
+
 
 <section class="products">
   {% for services in services %}

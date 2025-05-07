@@ -1,0 +1,6 @@
+<h2>Your Favourite Cleaners</h2>
+<ul>
+{% for cleaner in cleaners %}
+    <li>{{ cleaner.name }} - {{ cleaner.location }}</li>
+{% endfor %}
+</ul>

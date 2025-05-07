@@ -15,9 +15,9 @@ def open_browser():
 @app.route("/")
 def home():
     services = get_services()  # Call the controller to fetch data
-    return render_template("ServicesPg.html", services=services)
+    return render_template("HomeOwnerPg.html", services=services)
 
 if __name__ == "__main__":
-     # Start browser in a new thread
+    # Start browser in a new thread
     threading.Thread(target=open_browser).start()
     app.run(debug=True)
