@@ -199,42 +199,88 @@
     }
 
     function loadUserTable() {
-        document.getElementById('content').innerHTML = `
+        let html = `
             <h3>Manage Users</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Username</th>
                         <th>Role</th>
-                        <th>Email</th>
-                        <th>Date of Birth</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${users.map((user, index) => `
-                        <tr>
-                            <td>${user.username}</td>
-                            <td>${user.role}</td>
-                            <td>${user.email}</td>
-                            <td>${user.dob}</td>
-                            <td>${user.status}</td>
-                            <td>
-                                <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
-                                <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+        `;
+
+        users.forEach((user, index) => {
+            html += `
+                <tr>
+                    <td><a href="#" onclick="viewUser(${index})">${user.username}</a></td>
+                    <td>${user.role}</td>
+                    <td id="status-${index}">${user.status}</td>
+                    <td>
+                        <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
+                        <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
+                    </td>
+                </tr>`;
+        });
+
+        html += `</tbody></table>
+            <div id="user-detail"></div>
+            <div id="update-user-form"></div>
+        `;
+        document.getElementById('content').innerHTML = html;
+    }
+
+    function viewUser(index) {
+        const user = users[index];
+        document.getElementById('user-detail').innerHTML = `
+            <h3>User Details</h3>
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Role:</strong> ${user.role}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>DOB:</strong> ${user.dob}</p>
+            <p><strong>Status:</strong> ${user.status}</p>
         `;
     }
 
     function suspendUser(index) {
         users[index].status = "Suspended";
+        document.getElementById(`status-${index}`).innerText = "Suspended";
         alert("User Suspended Successfully!");
-        loadUserTable();
+        viewUser(index); // Ensure the user details are updated after suspension
+    }
+
+    function showUpdateForm(index) {
+        const user = users[index];
+        document.getElementById('update-user-form').innerHTML = `
+            <h3>Update User - ${user.username}</h3>
+            <form id="update-form">
+                <div class="form-group">
+                    <label>Role:</label>
+                    <input id="update-role" type="text" value="${user.role}" placeholder="Enter Role">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input id="update-email" type="text" value="${user.email}" placeholder="Enter Email">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth:</label>
+                    <input id="update-dob" type="date" value="${user.dob}">
+                </div>
+                <button type="button" onclick="updateUser(${index})">Save Changes</button>
+            </form>
+        `;
+    }
+
+    function updateUser(index) {
+        users[index].role = document.getElementById('update-role').value;
+        users[index].email = document.getElementById('update-email').value;
+        users[index].dob = document.getElementById('update-dob').value;
+
+        alert("User Updated Successfully!");
+        loadUserTable(); // Reload the table to reflect the updated user details
     }
 
     function loadUserProfiles() {
