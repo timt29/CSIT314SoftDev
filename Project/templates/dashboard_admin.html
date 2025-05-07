@@ -113,28 +113,6 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="password"], input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button[type="submit"], button[type="button"] {
-            margin-top: 10px;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #28a745;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-        }
-        button[type="submit"]:hover, button[type="button"]:hover {
-            background-color: #218838;
-        }
-
     </style>
 </head>
 <body>
@@ -147,17 +125,21 @@
 <div class="tabs">
     <div class="tab" onclick="showTab('create')">Create User</div>
     <div class="tab" onclick="showTab('view')">View Users</div>
+    <div class="tab" onclick="showTab('profiles')">User Profiles</div>
 </div>
 
-<div id="content">
-    <!-- Dynamic content will be loaded here -->
-</div>
+<div id="content"></div>
+<div id="user-detail"></div>
+<div id="update-user-form"></div>
 
 <script>
-    // Sample test users
     let users = [
-        { username: "admin", role: "Admin", email: "admin@example.com", dob: "1990-01-01", status: "Active" },
-        { username: "cleaner1", role: "Cleaner", email: "cleaner1@example.com", dob: "1995-05-05", status: "Active" }
+        { username: "admin", role: "Admin", email: "admin@example.com", dob: "1990-01-01", status: "Active" }
+    ];
+
+    let userProfiles = [
+        { role: "Admin", description: "System administrator with full access" },
+        { role: "Cleaner", description: "Responsible for cleaning and maintenance" }
     ];
 
     function logout() {
@@ -165,155 +147,116 @@
     }
 
     function showTab(tab) {
+        document.getElementById('user-detail').innerHTML = '';
+        document.getElementById('update-user-form').innerHTML = '';
+
         if (tab === "create") {
             document.getElementById('content').innerHTML = `
-            <h3>Create New User</h3>
-            <form id="create-form">
-                <div class="form-group">
-                    <label>Username:</label>
-                    <input id="create-username" type="text" placeholder="Enter Username" required>
-                </div>
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input id="create-password" type="password" placeholder="Enter Password" required>
-                </div>
-                <div class="form-group">
-                    <label for="userType">Select User Type:</label>
-                    <select id="userType">
-                        <option>Admin</option>
-                        <option>Cleaner</option>
-                        <option>Homeowner</option>
-                        <option>Platform Management</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Email:</label>
-                    <input id="create-email" type="text" placeholder="Enter Email" required>
-                </div>
-                <div class="form-group">
-                    <label>Date of Birth:</label>
-                    <input id="create-dob" type="date" required>
-                </div>
-                <button type="button" onclick="createUser()">Create User</button>
-            </form>
-        `;
+                <h3>Create New User</h3>
+                <form id="create-form">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input id="create-username" type="text" placeholder="Enter Username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input id="create-password" type="password" placeholder="Enter Password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="create-role">Role:</label>
+                        <select id="create-role">
+                            ${userProfiles.map(p => `<option>${p.role}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input id="create-email" type="text" placeholder="Enter Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth:</label>
+                        <input id="create-dob" type="date" required>
+                    </div>
+                    <button type="button" onclick="createUser()">Create User</button>
+                </form>
+            `;
         } else if (tab === "view") {
             loadUserTable();
+        } else if (tab === "profiles") {
+            loadUserProfiles();
         }
     }
 
     function createUser() {
         const username = document.getElementById("create-username").value;
-        const password = document.getElementById("create-password").value; // simulated
+        const password = document.getElementById("create-password").value;
         const role = document.getElementById("create-role").value;
         const email = document.getElementById("create-email").value;
         const dob = document.getElementById("create-dob").value;
 
-        if (!username || !role || !email || !dob) {
-            alert("Please fill all fields!");
-            return;
-        }
-
         users.push({ username, role, email, dob, status: "Active" });
-        alert("User Created Successfully!");
-        showTab('view');
+        alert("User created successfully!");
+        showTab("view");
     }
 
     function loadUserTable() {
-        let html = `
+        document.getElementById('content').innerHTML = `
             <h3>Manage Users</h3>
-            <input type="text" id="search-box" placeholder="Search username..." onkeyup="searchUser()">
-            <table id="user-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Username</th>
                         <th>Role</th>
+                        <th>Email</th>
+                        <th>Date of Birth</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>`;
-
-        users.forEach((user, index) => {
-            html += `
-                <tr>
-                    <td><a href="#" onclick="viewUser(${index})">${user.username}</a></td>
-                    <td>${user.role}</td>
-                    <td id="status-${index}">${user.status}</td>
-                    <td>
-                        <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
-                        <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
-                    </td>
-                </tr>`;
-        });
-
-        html += `</tbody></table>
-            <div id="user-detail"></div>
-            <div id="update-user-form"></div>
-        `;
-        document.getElementById('content').innerHTML = html;
-    }
-
-    function viewUser(index) {
-        const user = users[index];
-        document.getElementById('user-detail').innerHTML = `
-            <h3>User Details</h3>
-            <p><strong>Username:</strong> ${user.username}</p>
-            <p><strong>Role:</strong> ${user.role}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>DOB:</strong> ${user.dob}</p>
-            <p><strong>Status:</strong> ${user.status}</p>
+                <tbody>
+                    ${users.map((user, index) => `
+                        <tr>
+                            <td>${user.username}</td>
+                            <td>${user.role}</td>
+                            <td>${user.email}</td>
+                            <td>${user.dob}</td>
+                            <td>${user.status}</td>
+                            <td>
+                                <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
+                                <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
     }
 
     function suspendUser(index) {
         users[index].status = "Suspended";
-        document.getElementById(`status-${index}`).innerText = "Suspended";
-        viewUser(index);
         alert("User Suspended Successfully!");
-    }
-
-    function searchUser() {
-        const input = document.getElementById('search-box').value.toLowerCase();
-        const rows = document.querySelectorAll("#user-table tbody tr");
-
-        rows.forEach(row => {
-            const username = row.querySelector("td").innerText.toLowerCase();
-            if (username.includes(input)) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
-    }
-    function showUpdateForm(index) {
-        const user = users[index];
-        document.getElementById('update-user-form').innerHTML = `
-            <h3>Update User - ${user.username}</h3>
-            <form id="update-form">
-                <div class="form-group">
-                    <label>Role:</label>
-                    <input id="update-role" type="text" value="${user.role}" placeholder="Enter Role">
-                </div>
-                <div class="form-group">
-                    <label>Email:</label>
-                    <input id="update-email" type="text" value="${user.email}" placeholder="Enter Email">
-                </div>
-                <div class="form-group">
-                    <label>Date of Birth:</label>
-                    <input id="update-dob" type="date" value="${user.dob}">
-                </div>
-                <button type="button" onclick="updateUser(${index})">Save Changes</button>
-            </form>
-        `;
-    }
-    function updateUser(index) {
-        users[index].role = document.getElementById('update-role').value;
-        users[index].email = document.getElementById('update-email').value;
-        users[index].dob = document.getElementById('update-dob').value;
-
-        alert("User Updated Successfully!");
         loadUserTable();
+    }
+
+    function loadUserProfiles() {
+        document.getElementById('content').innerHTML = `
+            <h3>User Profiles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${userProfiles.map(profile => `
+                        <tr>
+                            <td>${profile.role}</td>
+                            <td>${profile.description}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
     }
 
     window.onload = () => {
