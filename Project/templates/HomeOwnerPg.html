@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cleaning Services</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Cleaners</title>
+    <style>
     header {
       background-color: #333;
       color: white;
@@ -24,56 +18,75 @@
       text-decoration: none;
       margin-left: 1rem;
     }
-    .hero {
-      background: #009688;
-      color: white;
-      text-align: center;
-      padding: 4rem 1rem;
-    }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      padding: 2rem;
-    }
-    .product-card {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    .product-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 4px;
-    }
-    .product-card h3 {
-      margin: 0.5rem 0;
-    }
-    .product-card p {
-      color: #555;
-    }
-    .product-card button {
-      margin-top: 0.5rem;
-      background: #009688;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    footer {
-      background: #333;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-    }
-  </style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            background: #009688;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        input, select, button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+        }
+        button {
+            background: #FF9800;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .cleaner-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .cleaner-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+        .cleaner-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .service-info {
+            color: #009688;
+            margin: 5px 0;
+        }
+        .price {
+            font-weight: bold;
+            color: #FF9800;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+    </style>
 </head>
-<body>
-
 <header>
   <h1>Cleaning Services</h1>
   <nav>
@@ -83,29 +96,51 @@
     <a href="#">Contact</a>
   </nav>
 </header>
+<body>
+    <div class="container">
+        <div class="search-box">
+            <h1>Find Cleaning Professionals</h1>
+            <form class="search-form" action="/search" method="post">
+                <input type="text" name="search_query" placeholder="Search by name..." 
+                       value="{{ search_query }}">
+                <select name="service_filter">
+                    <option value="">All Services</option>
+                    {% for service in services %}
+                    <option value="{{ service.service_id }}" 
+                            {% if selected_service == service.service_id|string %}selected{% endif %}>
+                        {{ service.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Search</button>
+            </form>
+        </div>
 
-<form action="/HOresults" method="post">
-  <label>Service:</label>
-  <input type="text" name="location">
-  <button type="submit">Search</button>
-</form>
-
-
-<section class="products">
-  {% for services in services %}
-  <div class="product-card">
-    <h3>{{ services.name }}</h3>
-    <p>Pricing: ${{ services.pricing }}</p>
-    <p>Service: {{ services.duration }}hr(s)</p>
-    <button>infomation</button>
-    <button>Book Now</button>
-  </div>
-  {% endfor %}
-</section>
-
-<footer>
-  <p>&copy; 2025 MyStore. All rights reserved.</p>
-</footer>
-
+        <div class="cleaner-list">
+            {% if cleaners %}
+                {% for cleaner in cleaners %}
+                <div class="cleaner-card">
+                    <div class="cleaner-name">{{ cleaner.cleaner_name }}</div>
+                    <div class="service-info">
+                        Service: {{ cleaner.service_name }}
+                    </div>
+                    <div class="service-info">
+                        Experience: {{ cleaner.experience }} years
+                    </div>
+                    <div class="price">
+                        Price: {{ cleaner.formatted_price }} ({{ cleaner.duration }} hours)
+                    </div>
+                    <button>Infomation</button>
+                    <button>Book Now</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-results">
+                    <p>No cleaners found matching your search criteria</p>
+                    <p>Try adjusting your search or filters</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

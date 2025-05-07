@@ -84,17 +84,19 @@
   </nav>
 </header>
 
+<!-- 
 <section class="hero">
   <h2>Cleaning Services</h2>
   <p>Place to find online cleaning services</p>
 </section>
+-->
 
 <section class="products">
   {% for services in services %}
   <div class="product-card">
     <h3>{{ services.name }}</h3>
-    <p>Pricing: ${{ services.pricing }}</p>
-    <p>Service: {{ services.duration }}hr(s)</p>
+    <p>Experience: {{ services.experience }}</p>
+    <p>Service: {{ services.service }}]</p>
     <button>infomation</button>
     <button>Book Now</button>
   </div>

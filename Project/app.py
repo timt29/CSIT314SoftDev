@@ -1,23 +1,41 @@
-from flask import Flask, render_template
-from servicesCont import get_services  # Import the controller function
-import webbrowser  # Add this import
-import threading   # To delay browser opening until server starts
+import webbrowser
+from flask import Flask, render_template, request
+from servicesCont import get_all_cleaners_with_services, search_cleaners, get_all_services
 
 app = Flask(__name__)
 
-def open_browser():
-    # Wait 1 second to ensure server starts
-    import time
-    time.sleep(1)
-    webbrowser.open_new("http://127.0.0.1:5000")
-
-
 @app.route("/")
 def home():
-    services = get_services()  # Call the controller to fetch data
-    return render_template("HomeOwnerPg.html", services=services)
+    cleaners = get_all_cleaners_with_services()
+    services = get_all_services()
+    return render_template(
+        "HomeOwnerPg.html",
+        cleaners=cleaners,
+        services=services,
+        search_query="",
+        selected_service=""
+    )
+
+@app.route("/search", methods=["POST"])
+def search():
+    search_query = request.form.get("search_query", "").strip()
+    selected_service = request.form.get("service_filter", "")
+    
+    cleaners = search_cleaners(
+        name_query=search_query if search_query else None,
+        service_id=int(selected_service) if selected_service else None
+    )
+    
+    services = get_all_services()
+    
+    return render_template(
+        "HomeOwnerPg.html",
+        cleaners=cleaners,
+        services=services,
+        search_query=search_query,
+        selected_service=selected_service
+    )
 
 if __name__ == "__main__":
-    # Start browser in a new thread
-    threading.Thread(target=open_browser).start()
+    webbrowser.open("http://127.0.0.1:5000/")
     app.run(debug=True)
