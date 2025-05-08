@@ -57,46 +57,30 @@
 
 <div class="login-container">
     <h2>Login System</h2>
-    <label for="userType">Select User Type:</label>
-    <select id="userType">
-        <option>Admin</option>
-        <option>Cleaner</option>
-        <option>Homeowner</option>
-        <option>Platform Management</option>
-    </select>
+    <form method="POST" action="/">
+        <label for="role">Select User Type:</label>
+        <select id="role" name="role">
+            <option>Admin User</option>
+            <option>Cleaner</option>
+            <option>Home Owner</option>
+            <option>Platform Management</option>
+        </select>
 
-    <label for="username">Username:</label>
-    <input type="text" id="username">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
 
-    <div class="btn-group">
-        <button class="login-btn" onclick="login()">Login</button>
-    </div>
+        <div class="btn-group">
+            <button type="submit">Login</button>
+        </div>
 
+        {% if error %}
+        <div style="color:red;text-align:center; margin-top: 10px;">{{ error }}</div>
+        {% endif %}
+    </form>
 </div>
-
-<script>
-    function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const userType = document.getElementById('userType').value;
-
-        // Simple fake login for sprint test
-        if (username === "admin" && password === "admin" && userType === "Admin") {
-            window.location.href = "dashboard_admin.html";
-        } else if (username === "cleaner" && password === "cleaner" && userType === "Cleaner") {
-            window.location.href = "dashboard_cleaner.html";
-        } else if (username === "homeowner" && password === "homeowner" && userType === "Homeowner") {
-            window.location.href = "dashboard_homeowner.html";
-        } else if (username === "platform" && password === "platform" && userType === "Platform Management") {
-            window.location.href = "dashboard_platform.html";
-        } else {
-            alert("Login Failed: Invalid credentials or role.");
-        }
-    }
-</script>
 
 </body>
 </html>
