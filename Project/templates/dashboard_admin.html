@@ -133,22 +133,18 @@
 <div id="update-user-form"></div>
 
 <script>
-    let users = [
-        { email: "admin@example.com", password: "admin123", name: "Admin", role: "Admin", dob: "1990-01-01", desc: "System administrator", status: "Active" }
-    ];
+    async function loadUserTable() {
+        // Fetch users from the API
+        const response = await fetch('/api/users');
+        const users = await response.json();
 
-    function logout() {
-        window.location.href = "login.html";
-    }
-
-    function loadUserTable() {
         let html = `
             <h3>Manage Users</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Email</th>
-                        <th>Name</th>
+                        <th>Username</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -161,7 +157,7 @@
             html += `
                 <tr>
                     <td><a href="#" onclick="viewUser(${index})">${user.email}</a></td>
-                    <td>${user.name}</td>
+                    <td>${user.username}</td>
                     <td>${user.role}</td>
                     <td id="status-${index}">${user.status}</td>
                     <td>
@@ -171,80 +167,101 @@
                 </tr>`;
         });
 
-        html += `</tbody></table>
-            <div id="user-detail"></div>
-            <div id="update-user-form"></div>
-        `;
+        html += `</tbody></table>`;
         document.getElementById('content').innerHTML = html;
     }
 
-    function viewUser(index) {
+    async function viewUser(index) {
+        const response = await fetch('/api/users');
+        const users = await response.json();
         const user = users[index];
+
         document.getElementById('user-detail').innerHTML = `
             <h3>User Details</h3>
             <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Name:</strong> ${user.name}</p>
+            <p><strong>Username:</strong> ${user.username}</p>
             <p><strong>Role:</strong> ${user.role}</p>
             <p><strong>DOB:</strong> ${user.dob}</p>
-            <p><strong>Description:</strong> ${user.desc}</p>
+            <p><strong>Description:</strong> ${user.description}</p>
             <p><strong>Status:</strong> ${user.status}</p>
         `;
     }
 
-    function suspendUser(index) {
-        users[index].status = "Suspended";
-        document.getElementById(`status-${index}`).innerText = "Suspended";
-        alert("User Suspended Successfully!");
-        viewUser(index); // Ensure the user details are updated after suspension
+    async function suspendUser(index) {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        const user = users[index];
+
+        const suspendResponse = await fetch(`/api/users/${user.user_id}/suspend`, {
+            method: 'PATCH'
+        });
+
+        if (suspendResponse.ok) {
+            alert("User Suspended Successfully!");
+            loadUserTable();
+        } else {
+            alert("Failed to suspend user.");
+        }
     }
 
-    function showUpdateForm(index) {
+    async function showUpdateForm(index) {
+        const response = await fetch('/api/users');
+        const users = await response.json();
         const user = users[index];
+
         document.getElementById('update-user-form').innerHTML = `
             <h3>Update User - ${user.email}</h3>
             <form id="update-form">
                 <div class="form-group">
-                    <label>Name:</label>
-                    <input id="update-name" type="text" value="${user.name}" placeholder="Enter Name">
+                    <label>Username:</label>
+                    <input id="update-username" type="text" value="${user.username}" placeholder="Enter Username">
                 </div>
                 <div class="form-group">
-                    <label>Role:</label>
-                    <input id="update-role" type="text" value="${user.role}" placeholder="Enter Role">
+                    <label>Email:</label>
+                    <input id="update-email" type="email" value="${user.email}" placeholder="Enter Email">
                 </div>
-                <div class="form-group">
-                    <label>Date of Birth:</label>
-                    <input id="update-dob" type="date" value="${user.dob}">
-                </div>
-                <div class="form-group">
-                    <label>Description:</label>
-                    <input id="update-desc" type="text" value="${user.desc}" placeholder="Enter Description">
-                </div>
-                <button type="button" onclick="updateUser(${index})">Save Changes</button>
+                <button type="button" onclick="updateUser(${user.user_id})">Save Changes</button>
             </form>
         `;
     }
 
-    function updateUser(index) {
-        users[index].name = document.getElementById('update-name').value;
-        users[index].role = document.getElementById('update-role').value;
-        users[index].dob = document.getElementById('update-dob').value;
-        users[index].desc = document.getElementById('update-desc').value;
+    async function updateUser(userId) {
+        const username = document.getElementById('update-username').value;
+        const email = document.getElementById('update-email').value;
 
-        alert("User Updated Successfully!");
-        loadUserTable(); // Reload the table to reflect the updated user details
+        const response = await fetch(`/api/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email })
+        });
+
+        if (response.ok) {
+            alert("User updated successfully!");
+            loadUserTable();
+        } else {
+            alert("Failed to update user.");
+        }
     }
 
-    function createUser() {
+    async function createUser() {
         const email = document.getElementById("create-email").value;
         const password = document.getElementById("create-password").value;
-        const name = document.getElementById("create-name").value;
+        const username = document.getElementById("create-username").value;
         const role = document.getElementById("create-role").value;
         const dob = document.getElementById("create-dob").value;
-        const desc = document.getElementById("create-desc").value;
 
-        users.push({ email, password, name, role, dob, desc, status: "Active" });
-        alert("User created successfully!");
-        loadUserTable();
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, username, role, dob })
+        });
+
+        if (response.ok) {
+            alert("User created successfully!");
+            loadUserTable();
+        } else {
+            alert("Failed to create user.");
+        }
     }
 
     function showTab(tab) {
@@ -264,20 +281,21 @@
                         <input id="create-password" type="password" placeholder="Enter Password" required>
                     </div>
                     <div class="form-group">
-                        <label>Name:</label>
-                        <input id="create-name" type="text" placeholder="Enter Name" required>
+                        <label>Username:</label>
+                        <input id="create-username" type="text" placeholder="Enter Username" required>
                     </div>
                     <div class="form-group">
                         <label>Role:</label>
-                        <input id="create-role" type="text" placeholder="Enter Role" required>
+                        <select id="create-role" required>
+                            <option value="Cleaner">Cleaner</option>
+                            <option value="Admin User">Admin User</option>
+                            <option value="Platform Management">Platform Management</option>
+                            <option value="Home Owner">Home Owner</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Date of Birth:</label>
                         <input id="create-dob" type="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <input id="create-desc" type="text" placeholder="Enter Description" required>
                     </div>
                     <button type="button" onclick="createUser()">Create User</button>
                 </form>
