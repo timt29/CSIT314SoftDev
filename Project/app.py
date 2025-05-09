@@ -54,7 +54,22 @@ def admin_dashboard():
 
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():
-    return render_template("dashboard_cleaner.html")
+    if "user" not in session or session["user"]["role"] != "Cleaner":
+        return redirect(url_for("login"))
+
+    cleaner_id = session["user"]["id"]  # Make sure 'id' is in session["user"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT * FROM cleaner
+        WHERE userid = %s
+    """, (cleaner_id,))
+    services = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template("dashboard_cleaner.html", services=services, cleaner_name=session["user"]["username"])
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
@@ -138,6 +153,39 @@ def register_user():
     cursor.close()
     conn.close()
     return jsonify({"message": "User registered"}), 201
+
+@app.route('/get_cleaner_services')
+def get_cleaner_services():
+    userid = request.args.get('userid')
+    if not userid:
+        return jsonify({'error': 'Missing userid'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT name, pricing, duration FROM services WHERE cleaner_id = ?', (userid,))
+    services = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    return jsonify(services)
+
+@app.route('/update_service/<int:service_id>', methods=['PUT'])
+def update_service(service_id):
+    data = request.json
+    conn = get_db_connection()
+    conn.execute(
+        'UPDATE service SET name = ?, pricing = ?, duration = ? WHERE service_id = ?',
+        (data['name'], data['pricing'], data['duration'], service_id)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Service updated'})
+
+@app.route('/delete_service/<int:service_id>', methods=['DELETE'])
+def delete_service(service_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM service WHERE service_id = ?', (service_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Service deleted'})
 
 
 if __name__ == "__main__":
