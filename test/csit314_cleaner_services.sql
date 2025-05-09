@@ -38,7 +38,7 @@ CREATE TABLE `cleaner_services` (
 
 LOCK TABLES `cleaner_services` WRITE;
 /*!40000 ALTER TABLE `cleaner_services` DISABLE KEYS */;
-INSERT INTO `cleaner_services` VALUES (100,1),(101,1),(100,2),(103,2),(102,3),(105,3);
+INSERT INTO `cleaner_services` VALUES (1,1),(100,1),(101,1),(1,2),(100,2),(103,2),(1,3),(102,3),(105,3),(1,4);
 /*!40000 ALTER TABLE `cleaner_services` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-09 18:46:19
+-- Dump completed on 2025-05-10  3:04:45
