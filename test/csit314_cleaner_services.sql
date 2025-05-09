@@ -16,26 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `service category`
+-- Table structure for table `cleaner_services`
 --
 
-DROP TABLE IF EXISTS `service category`;
+DROP TABLE IF EXISTS `cleaner_services`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `service category` (
-  `service type` varchar(45) NOT NULL,
-  `name` varchar(45) DEFAULT NULL
+CREATE TABLE `cleaner_services` (
+  `cleaner_id` int NOT NULL,
+  `service_id` int NOT NULL,
+  PRIMARY KEY (`cleaner_id`,`service_id`),
+  KEY `service_id` (`service_id`),
+  CONSTRAINT `cleaner_services_ibfk_1` FOREIGN KEY (`cleaner_id`) REFERENCES `cleaner` (`userid`),
+  CONSTRAINT `cleaner_services_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `service category`
+-- Dumping data for table `cleaner_services`
 --
 
-LOCK TABLES `service category` WRITE;
-/*!40000 ALTER TABLE `service category` DISABLE KEYS */;
-INSERT INTO `service category` VALUES ('Home Cleaning','Cleaning'),('Home Cleaning','Vacuuming'),('Home Cleaning','Mopping'),('Washing','Washing Dishes'),('Washing','Laundry'),('Misc','Cooking');
-/*!40000 ALTER TABLE `service category` ENABLE KEYS */;
+LOCK TABLES `cleaner_services` WRITE;
+/*!40000 ALTER TABLE `cleaner_services` DISABLE KEYS */;
+INSERT INTO `cleaner_services` VALUES (100,1),(101,1),(100,2),(103,2),(102,3),(105,3);
+/*!40000 ALTER TABLE `cleaner_services` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -47,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-09 18:46:18
+-- Dump completed on 2025-05-09 18:46:19
