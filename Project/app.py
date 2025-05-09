@@ -51,7 +51,6 @@ def login():
 @app.route("/dashboard_admin")
 def admin_dashboard():
     return render_template("dashboard_admin.html")
-
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():
     if "user" not in session or session["user"]["role"] != "Cleaner":
@@ -62,8 +61,10 @@ def cleaner_dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT * FROM cleaner
-        WHERE userid = %s
+        SELECT s.service_id, s.name, s.pricing, s.duration
+        FROM service s
+        JOIN cleaner_services cs ON s.service_id = cs.service_id
+        WHERE cs.cleaner_id = %s
     """, (cleaner_id,))
     services = cursor.fetchall()
     cursor.close()
@@ -154,39 +155,61 @@ def register_user():
     conn.close()
     return jsonify({"message": "User registered"}), 201
 
-@app.route('/get_cleaner_services')
+@app.route('/get_cleaner_services', methods=['GET'])
 def get_cleaner_services():
-    userid = request.args.get('userid')
-    if not userid:
-        return jsonify({'error': 'Missing userid'}), 400
+    cleaner_id = request.args.get('cleaner_id')  # Cleaner ID passed from the frontend
 
     conn = get_db_connection()
-    cursor = conn.execute('SELECT name, pricing, duration FROM services WHERE cleaner_id = ?', (userid,))
-    services = [dict(row) for row in cursor.fetchall()]
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT s.service_id, s.name, s.pricing, s.duration
+        FROM service s
+        JOIN cleaner_services cs ON s.service_id = cs.service_id
+        WHERE cs.cleaner_id = %s
+    """, (cleaner_id,))
+    cleaner_services = cursor.fetchall()
+    cursor.close()
     conn.close()
 
-    return jsonify(services)
+    return jsonify(cleaner_services)
 
 @app.route('/update_service/<int:service_id>', methods=['PUT'])
 def update_service(service_id):
     data = request.json
+
     conn = get_db_connection()
-    conn.execute(
-        'UPDATE service SET name = ?, pricing = ?, duration = ? WHERE service_id = ?',
-        (data['name'], data['pricing'], data['duration'], service_id)
-    )
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE service
+        SET name = %s, pricing = %s, duration = %s
+        WHERE service_id = %s
+    """, (data['name'], data['pricing'], data['duration'], service_id))
     conn.commit()
+    cursor.close()
     conn.close()
+
     return jsonify({'message': 'Service updated'})
 
 @app.route('/delete_service/<int:service_id>', methods=['DELETE'])
 def delete_service(service_id):
     conn = get_db_connection()
-    conn.execute('DELETE FROM service WHERE service_id = ?', (service_id,))
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM service WHERE service_id = %s', (service_id,))
     conn.commit()
+    cursor.close()
     conn.close()
     return jsonify({'message': 'Service deleted'})
 
+@app.route("/services", methods=["GET"])
+def get_all_services():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM service")
+    services = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return jsonify(services)
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000/")

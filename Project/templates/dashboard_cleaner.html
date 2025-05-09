@@ -78,7 +78,7 @@
 
   <div id="services-container" class="card-container">
     <!-- JavaScript will dynamically insert service cards here -->
-
+    <p id="no-services-msg" style="display: none;">No services assigned to you.</p>
     <div class="edit-buttons" style="display: none;">
     <button class="service-action-btn" id="addServiceBtn">+ Add New Service</button>
     <button class="service-action-btn" id="editServicesBtn">Edit Services</button>
@@ -91,21 +91,27 @@
 
   fetch(`http://localhost:5000/get_cleaner_services?userid=${userid}`)
     .then(response => response.json())
-    .then(services => {
-      const container = document.getElementById('services-container'); // Make sure this ID exists in your HTML
+  .then(services => {
+    console.log(services);  // Check the fetched services
+    const container = document.getElementById('services-container');
 
+    if (services.length === 0) {
+      container.innerHTML = '<p>No services assigned to you.</p>';
+    } else {
       services.forEach(service => {
         const card = document.createElement('div');
         card.classList.add('service-card');
-        card.innerHTML = `<h3>Service: ${service.name}</h3>
-                          <p>Pricing: $${service.pricing}</p>
-                          <p>Duration: ${service.duration} hours</p>`;
+        card.innerHTML = `
+          <h3>Service: ${service.name}</h3>
+          <p>Pricing: $${service.pricing}</p>
+          <p>Duration: ${service.duration} hours</p>`;
         container.appendChild(card);
       });
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching services:', error);
+  });
 </script>
 <script>
 let editMode = false;
