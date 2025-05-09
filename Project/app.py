@@ -51,26 +51,38 @@ def login():
 @app.route("/dashboard_admin")
 def admin_dashboard():
     return render_template("dashboard_admin.html")
+
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():
-    if "user" not in session or session["user"]["role"] != "Cleaner":
-        return redirect(url_for("login"))
+    user = session.get("user")
+    if not user:
+        return redirect('/login')  # Redirect to login if not logged in
 
-    cleaner_id = session["user"]["id"]  # Make sure 'id' is in session["user"]
+    user_id = user.get("id")  # Extract the user ID from session
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
+    # Get the cleaner's info
+    cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
+    cleaner = cursor.fetchone()
+
+    # Get services assigned to the cleaner
     cursor.execute("""
-        SELECT s.service_id, s.name, s.pricing, s.duration
+        SELECT s.name AS service_name, s.pricing, s.duration 
         FROM service s
         JOIN cleaner_services cs ON s.service_id = cs.service_id
         WHERE cs.cleaner_id = %s
-    """, (cleaner_id,))
+    """, (user_id,))
     services = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template("dashboard_cleaner.html", services=services, cleaner_name=session["user"]["username"])
+    if not cleaner:
+        return "Cleaner not found!"
+
+    return render_template('dashboard_cleaner.html', cleaner_name=cleaner['name'], services=services)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
@@ -155,10 +167,12 @@ def register_user():
     conn.close()
     return jsonify({"message": "User registered"}), 201
 
-@app.route('/get_cleaner_services', methods=['GET'])
+@app.route("/get_cleaner_services", methods=["GET"])
 def get_cleaner_services():
-    cleaner_id = request.args.get('cleaner_id')  # Cleaner ID passed from the frontend
-
+    cleaner_id = session.get("user", {}).get("id")
+    if not cleaner_id:
+        return jsonify({"error": "User not logged in"}), 401
+    
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""

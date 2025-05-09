@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,9 +77,9 @@
     <button class="add-service-btn">+ Add New Service</button>
     <button class="edit-services-btn">Edit Services</button>
 
-  <div id="services-container" class="card-container">
+  <div id="services-container" class="card-container"> -->
     <!-- JavaScript will dynamically insert service cards here -->
-    <p id="no-services-msg" style="display: none;">No services assigned to you.</p>
+    <!--<p id="no-services-msg" style="display: none;">No services assigned to you.</p>
     <div class="edit-buttons" style="display: none;">
     <button class="service-action-btn" id="addServiceBtn">+ Add New Service</button>
     <button class="service-action-btn" id="editServicesBtn">Edit Services</button>
@@ -86,32 +87,30 @@
   </div>
 
   <script>
-  // Replace this with the actual logged-in user's ID (e.g., from session or localStorage)
-  const userid = 101;
-
-  fetch(`http://localhost:5000/get_cleaner_services?userid=${userid}`)
+  const cleanerId = {{ cleaner_id }};
+  fetch(`/get_cleaner_services?cleaner_id=${cleanerId}`)
     .then(response => response.json())
-  .then(services => {
-    console.log(services);  // Check the fetched services
-    const container = document.getElementById('services-container');
-
-    if (services.length === 0) {
-      container.innerHTML = '<p>No services assigned to you.</p>';
-    } else {
-      services.forEach(service => {
-        const card = document.createElement('div');
-        card.classList.add('service-card');
-        card.innerHTML = `
-          <h3>Service: ${service.name}</h3>
-          <p>Pricing: $${service.pricing}</p>
-          <p>Duration: ${service.duration} hours</p>`;
-        container.appendChild(card);
-      });
-    }
-  })
-  .catch(error => {
-    console.error('Error fetching services:', error);
-  });
+    .then(services => {
+      const container = document.getElementById('services-container');
+      if (services.length === 0) {
+        container.innerHTML = '<p>No services assigned to you.</p>';
+      } else {
+        services.forEach(service => {
+          const card = document.createElement('div');
+          card.classList.add('service-card');
+          card.dataset.serviceId = service.service_id;
+          card.innerHTML = `
+            <h3>Service: ${service.name}</h3>
+            <p>Pricing: $${service.pricing}</p>
+            <p>Duration: ${service.duration} hours</p>
+          `;
+          container.appendChild(card);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching services:', error);
+    });
 </script>
 <script>
 let editMode = false;
@@ -162,3 +161,90 @@ document.addEventListener("click", function (e) {
 </body>
 </html>
 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cleaner Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #34495e;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+    }
+    .container {
+      padding: 20px;
+    }
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .service-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .service-card h3 {
+      margin: 0 0 10px;
+    }
+    .actions button {
+      margin-right: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Welcome, {{ cleaner_name }}</h1>
+  </header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Logout</a>
+  </nav>
+
+  <div class="container">
+    <button class="add-service-btn">+ Add New Service</button>
+    <button class="edit-services-btn">Edit Services</button>
+
+    <div id="services-container" class="card-container">
+      {% if services %}
+        {% for service in services %}
+          <div class="service-card">
+            <h3>Service: {{ service.service_name }}</h3>
+            <p>Pricing: ${{ service.pricing }}</p>
+            <p>Duration: {{ service.duration }} hours</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No services assigned to you.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</body>
+</html>
