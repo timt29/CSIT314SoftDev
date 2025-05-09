@@ -2,6 +2,7 @@ import webbrowser
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import mysql.connector
 from servicesCont import get_all_cleaners_with_services, search_cleaners, get_all_services
+from favCont import get_favourite_cleaners
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -90,6 +91,11 @@ def search():
         search_query=search_query,
         selected_service=selected_service
     )
+
+@app.route('/fav')
+def favourites_page():
+    cleaners = get_favourite_cleaners()
+    return render_template('HOfav.html', favourites=cleaners)
 
 @app.route("/users", methods=["GET"])
 def get_users():

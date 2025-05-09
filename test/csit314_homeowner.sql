@@ -40,7 +40,7 @@ CREATE TABLE `homeowner` (
 
 LOCK TABLES `homeowner` WRITE;
 /*!40000 ALTER TABLE `homeowner` DISABLE KEYS */;
-INSERT INTO `homeowner` VALUES (1,'Vernon00','vernon','Vernon','2000-06-09','vernongay@gmail.com','landed'),(200,'ali93','ali','ali','1993-07-21','ali@gmail.com','2room'),(201,'mark10','mark','mark','1990-10-10','mark@gmail.com','landed'),(202,'daisy83','daisy','daisy','1983-08-03','daisy@gmail.com','5room exec');
+INSERT INTO `homeowner` VALUES (200,'Vernon00','vernon','Vernon','2000-06-09','vernongay@gmail.com','landed'),(201,'ali93','ali','ali','1993-07-21','ali@gmail.com','2room'),(202,'mark10','mark','mark','1990-10-10','mark@gmail.com','landed'),(203,'daisy83','daisy','daisy','1983-08-03','daisy@gmail.com','5room exec');
 /*!40000 ALTER TABLE `homeowner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
