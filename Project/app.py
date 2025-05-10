@@ -4,6 +4,8 @@ import mysql.connector
 from servicesCont import get_all_cleaners_with_services, search_cleaners, get_all_services
 from favCont import get_favourite_cleaners
 from historyCont import get_service_history
+from UserProfileController import UserProfileController
+from UserAdminController import AdminController
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -14,8 +16,12 @@ def get_db_connection():
         host="localhost",
         user="root",  
         password="password", 
-        database="csit314"
+        database="testingcsit314"
     )
+
+# Initialize Controllers
+AdminController(app, get_db_connection)
+UserProfileController(app, get_db_connection)
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -37,21 +43,17 @@ def login():
         if user:
             session["user"] = user
             if role == "Admin User":
-                return redirect(url_for("admin_dashboard"))  # Correct endpoint name
+                return redirect(url_for("admin_dashboard"))  # Handled by AdminController
             elif role == "Cleaner":
-                return redirect(url_for("cleaner_dashboard"))  # Correct endpoint name
+                return redirect(url_for("cleaner_dashboard"))
             elif role == "Home Owner":
-                return redirect(url_for("home"))  # Correct endpoint name
+                return redirect(url_for("home"))
             elif role == "Platform Management":
-                return redirect(url_for("platform_dashboard"))  # Correct endpoint name
+                return redirect(url_for("platform_dashboard"))
         else:
             return render_template("login.html", error="Invalid credentials or role")
 
     return render_template("login.html")
-
-@app.route("/dashboard_admin")
-def admin_dashboard():
-    return render_template("dashboard_admin.html")
 
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():
@@ -127,25 +129,6 @@ def favourites_page():
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
 
-
-@app.route("/history")
-def view_history():
-    from servicesCont import get_all_services  # reuse your existing service list
-    session["homeowner_id"] = 4  # Force-set for testing
-        
-    service_id = request.args.get("service_filter", type=int)
-    date_used = request.args.get("date_used")
-
-    history = get_service_history(service_id, date_used)
-    services = get_all_services()
-
-    return render_template(
-        "history.html",
-        history=history,
-        services=services,
-        selected_service=service_id,
-        date_used=date_used or ""
-    )
 @app.route("/users", methods=["GET"])
 def get_users():
     conn = get_db_connection()

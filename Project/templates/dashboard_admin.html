@@ -69,6 +69,20 @@
             box-sizing: border-box;
             background-color: #fff;
         }
+        textarea {
+            display: block;
+            width: 80%;
+            padding: 10px 12px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fff;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 100px; /* Set a minimum height */
+        }
         button {
             padding: 8px 12px;
             background-color: #28a745;
@@ -126,6 +140,8 @@
 <div class="tabs">
     <div class="tab" onclick="showTab('create')">Create User</div>
     <div class="tab" onclick="showTab('view')">View Users</div>
+    <div class="tab" onclick="showTab('createProfile')">Create User Profile</div>
+    <div class="tab" onclick="showTab('viewProfiles')">View User Profiles</div>
 </div>
 
 <div id="content"></div>
@@ -133,8 +149,23 @@
 <div id="update-user-form"></div>
 
 <script>
+    function logout() {
+        console.log("Logout function called"); // Debugging log
+        fetch('/logout', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/'; // Redirect to the login page
+                } else {
+                    alert("Failed to log out.");
+                }
+            })
+            .catch(error => {
+                console.error("Logout error:", error);
+                alert("An error occurred while logging out.");
+            });
+    }
+
     async function loadUserTable() {
-        // Fetch users from the API
         const response = await fetch('/api/users');
         const users = await response.json();
 
@@ -144,8 +175,9 @@
                 <thead>
                     <tr>
                         <th>Email</th>
-                        <th>Username</th>
+                        <th>Name</th>
                         <th>Role</th>
+                        <th>Date of Birth</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -153,16 +185,18 @@
                 <tbody>
         `;
 
-        users.forEach((user, index) => {
+        users.forEach(user => {
+            const formattedDoB = new Date(user.DoB).toLocaleDateString(); // Format the date
             html += `
                 <tr>
-                    <td><a href="#" onclick="viewUser(${index})">${user.email}</a></td>
-                    <td>${user.username}</td>
-                    <td>${user.role}</td>
-                    <td id="status-${index}">${user.status}</td>
+                    <td><a href="#" onclick="viewUserDetails('${user.Email}')">${user.Email}</a></td>
+                    <td>${user.Name}</td>
+                    <td>${user.Role}</td>
+                    <td>${formattedDoB}</td>
+                    <td>${user.Status}</td>
                     <td>
-                        <button class="action-button" onclick="showUpdateForm(${index})">Update</button>
-                        <button class="suspend-button" onclick="suspendUser(${index})">Suspend</button>
+                        <button class="action-button" onclick="showUpdateForm('${user.Email}')">Update</button>
+                        <button class="suspend-button" onclick="suspendUser('${user.Email}')">Suspend</button>
                     </td>
                 </tr>`;
         });
@@ -171,137 +205,306 @@
         document.getElementById('content').innerHTML = html;
     }
 
-    async function viewUser(index) {
+    async function viewUserDetails(email) {
         const response = await fetch('/api/users');
         const users = await response.json();
-        const user = users[index];
+        const user = users.find(u => u.Email === email);
+
+        // Clear the update form if it's open
+        document.getElementById('update-user-form').innerHTML = '';
+
+        const formattedDoB = new Date(user.DoB).toLocaleDateString(); // Format the date
 
         document.getElementById('user-detail').innerHTML = `
             <h3>User Details</h3>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Username:</strong> ${user.username}</p>
-            <p><strong>Role:</strong> ${user.role}</p>
-            <p><strong>DOB:</strong> ${user.dob}</p>
-            <p><strong>Description:</strong> ${user.description}</p>
-            <p><strong>Status:</strong> ${user.status}</p>
+            <p><strong>Email:</strong> ${user.Email}</p>
+            <p><strong>Name:</strong> ${user.Name}</p>
+            <p><strong>Role:</strong> ${user.Role}</p>
+            <p><strong>Date of Birth:</strong> ${formattedDoB}</p>
+            <p><strong>Status:</strong> ${user.Status}</p>
+            <button onclick="closeUserDetail()">Close</button>
         `;
     }
 
-    async function suspendUser(index) {
-        const response = await fetch('/api/users');
-        const users = await response.json();
-        const user = users[index];
+    // Function to close the user detail view
+    function closeUserDetail() {
+        document.getElementById('user-detail').innerHTML = '';
+    }
 
-        const suspendResponse = await fetch(`/api/users/${user.user_id}/suspend`, {
+    async function suspendUser(email) {
+        const response = await fetch(`/api/users/${email}/suspend`, {
             method: 'PATCH'
         });
 
-        if (suspendResponse.ok) {
-            alert("User Suspended Successfully!");
-            loadUserTable();
+        if (response.ok) {
+            alert("User suspended successfully!");
+            loadUserTable(); // Reload the user table to reflect the updated status
         } else {
-            alert("Failed to suspend user.");
+            const error = await response.json();
+            alert(`Failed to suspend user: ${error.message}`);
         }
     }
 
-    async function showUpdateForm(index) {
+    async function showUpdateForm(email) {
         const response = await fetch('/api/users');
         const users = await response.json();
-        const user = users[index];
+        const user = users.find(u => u.Email === email);
+
+        const rolesResponse = await fetch('/api/user_profiles');
+        const profiles = await rolesResponse.json();
+
+        const roleOptions = profiles.map(profile => `
+            <option value="${profile.Role}" ${profile.Role === user.Role ? 'selected' : ''}>
+                ${profile.Role}
+            </option>
+        `).join('');
+
+        // Clear the user detail view if it's open
+        document.getElementById('user-detail').innerHTML = '';
 
         document.getElementById('update-user-form').innerHTML = `
-            <h3>Update User - ${user.email}</h3>
+            <h3>Update User - ${user.Email}</h3>
             <form id="update-form">
                 <div class="form-group">
-                    <label>Username:</label>
-                    <input id="update-username" type="text" value="${user.username}" placeholder="Enter Username">
+                    <label>Name:</label>
+                    <input id="update-name" type="text" value="${user.Name}" placeholder="Enter Name">
                 </div>
                 <div class="form-group">
-                    <label>Email:</label>
-                    <input id="update-email" type="email" value="${user.email}" placeholder="Enter Email">
+                    <label>Role:</label>
+                    <select id="update-role">
+                        ${roleOptions}
+                    </select>
                 </div>
-                <button type="button" onclick="updateUser(${user.user_id})">Save Changes</button>
+                <button type="button" onclick="updateUser('${user.Email}')">Save Changes</button>
+                <button type="button" onclick="closeUpdateForm()">Close</button>
             </form>
         `;
     }
 
-    async function updateUser(userId) {
-        const username = document.getElementById('update-username').value;
-        const email = document.getElementById('update-email').value;
+    // Function to close the update user form
+    function closeUpdateForm() {
+        document.getElementById('update-user-form').innerHTML = '';
+    }
 
-        const response = await fetch(`/api/users/${userId}`, {
+    async function updateUser(email) {
+        const name = document.getElementById('update-name').value;
+        const role = document.getElementById('update-role').value;
+
+        console.log("Data being sent:", { name, role });
+
+        const response = await fetch(`/api/users/${email}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email })
+            body: JSON.stringify({ name, role })
         });
 
         if (response.ok) {
             alert("User updated successfully!");
             loadUserTable();
         } else {
-            alert("Failed to update user.");
+            const error = await response.json();
+            alert(`Failed to update user: ${error.message}`);
         }
     }
 
     async function createUser() {
         const email = document.getElementById("create-email").value;
+        const name = document.getElementById("create-name").value;
         const password = document.getElementById("create-password").value;
-        const username = document.getElementById("create-username").value;
         const role = document.getElementById("create-role").value;
         const dob = document.getElementById("create-dob").value;
+
+        console.log("Data being sent:", { email, name, password, role, dob }); // Debugging log
 
         const response = await fetch('/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, username, role, dob })
+            body: JSON.stringify({ email, name, password, role, dob })
         });
 
         if (response.ok) {
             alert("User created successfully!");
-            loadUserTable();
+            showTab('view'); // Redirect to the "View Users" tab
         } else {
-            alert("Failed to create user.");
+            const error = await response.json();
+            alert(`Failed to create user: ${error.message}`);
         }
     }
 
-    function showTab(tab) {
+    async function createUserProfile() {
+        const role = document.getElementById("create-role-name").value;
+        const description = document.getElementById("create-role-description").value;
+
+        const response = await fetch('/api/user_profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role, description })
+        });
+
+        if (response.ok) {
+            alert("User profile created!");
+            showTab('viewProfiles');
+        } else {
+            alert("Failed to create profile.");
+        }
+    }
+
+    async function loadProfileTable() {
+        const response = await fetch('/api/user_profiles');
+        const profiles = await response.json();
+
+        const rows = profiles.map(profile => `
+            <tr>
+                <td>${profile.Role}</td>
+                <td>${profile.Description}</td>
+                <td>
+                    <button class="action-button" onclick="showUpdateProfileForm('${profile.Role}', '${profile.Description}')">Update</button>
+                    <button class="suspend-button" onclick="deleteUserProfile('${profile.Role}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+
+        document.getElementById('content').innerHTML = `
+            <h3>User Profiles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        `;
+    }
+
+    function renderCreateProfileForm() {
+        document.getElementById('content').innerHTML = `
+            <h3>Create User Profile</h3>
+            <form id="create-profile-form">
+                <div class="form-group">
+                    <label>Role:</label>
+                    <input id="create-role-name" type="text" placeholder="Enter Role Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <input id="create-role-description" type="text" placeholder="Enter Description" required>
+                </div>
+                <button type="button" onclick="createUserProfile()">Create Profile</button>
+            </form>
+        `;
+    }
+
+    async function renderCreateUserForm() {
+        // Fetch roles dynamically
+        const response = await fetch('/api/user_profiles');
+        const profiles = await response.json();
+
+        // Generate options for the dropdown
+        const roleOptions = profiles.map(profile => `<option value="${profile.Role}">${profile.Role}</option>`).join('');
+
+        // Render the form
+        document.getElementById('content').innerHTML = `
+            <h3>Create New User</h3>
+            <form id="create-form">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input id="create-email" type="email" placeholder="Enter Email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input id="create-password" type="password" placeholder="Enter Password" required>
+                </div>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input id="create-name" type="text" placeholder="Enter Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="create-role" required>
+                        ${roleOptions}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth:</label>
+                    <input id="create-dob" type="date" required>
+                </div>
+                <button type="button" onclick="createUser()">Create User</button>
+            </form>
+        `;
+    }
+
+    function showUpdateProfileForm(role, description) {
+        document.getElementById('update-user-form').innerHTML = `
+            <h3>Update User Profile - ${role}</h3>
+            <form id="update-profile-form">
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="update-description" placeholder="Enter new description" required>${description}</textarea>
+                </div>
+                <button type="button" onclick="updateUserProfile('${role}')">Save Changes</button>
+                <button type="button" onclick="closeUpdateProfileForm()">Close</button>
+            </form>
+        `;
+    }
+
+    // Function to close the update user profile form
+    function closeUpdateProfileForm() {
+        document.getElementById('update-user-form').innerHTML = '';
+    }
+
+    async function updateUserProfile(role) {
+        const description = document.getElementById('update-description').value;
+
+        const response = await fetch(`/api/user_profiles/${role}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description })
+        });
+
+        if (response.ok) {
+            alert("User profile updated successfully!");
+            loadProfileTable(); // Reload the profile table
+        } else {
+            const error = await response.json();
+            alert(`Failed to update user profile: ${error.message}`);
+        }
+    }
+
+    async function deleteUserProfile(role) {
+        if (!confirm(`Are you sure you want to delete the role "${role}"?`)) {
+            return;
+        }
+
+        const response = await fetch(`/api/user_profiles/${role}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert("User profile deleted successfully!");
+            loadProfileTable(); // Reload the profile table
+        } else {
+            const error = await response.json();
+            alert(`Failed to delete user profile: ${error.message}`);
+        }
+    }
+
+    async function showTab(tab) {
+        // Clear any existing content
         document.getElementById('user-detail').innerHTML = '';
         document.getElementById('update-user-form').innerHTML = '';
 
         if (tab === "create") {
-            document.getElementById('content').innerHTML = `
-                <h3>Create New User</h3>
-                <form id="create-form">
-                    <div class="form-group">
-                        <label>Email:</label>
-                        <input id="create-email" type="email" placeholder="Enter Email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password:</label>
-                        <input id="create-password" type="password" placeholder="Enter Password" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Username:</label>
-                        <input id="create-username" type="text" placeholder="Enter Username" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Role:</label>
-                        <select id="create-role" required>
-                            <option value="Cleaner">Cleaner</option>
-                            <option value="Admin User">Admin User</option>
-                            <option value="Platform Management">Platform Management</option>
-                            <option value="Home Owner">Home Owner</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Date of Birth:</label>
-                        <input id="create-dob" type="date" required>
-                    </div>
-                    <button type="button" onclick="createUser()">Create User</button>
-                </form>
-            `;
+            await renderCreateUserForm();
         } else if (tab === "view") {
             loadUserTable();
+        } else if (tab === "createProfile") {
+            renderCreateProfileForm();
+        } else if (tab === "viewProfiles") {
+            loadProfileTable();
         }
     }
 
