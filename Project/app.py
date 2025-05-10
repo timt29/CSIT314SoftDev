@@ -129,6 +129,25 @@ def favourites_page():
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
 
+@app.route("/history")
+def view_history():
+    from servicesCont import get_all_services
+
+    service_id = request.args.get("service_filter", type=int)
+    date_used = request.args.get("date_used")
+
+    history = get_service_history(service_id, date_used)
+    services = get_all_services()
+
+    return render_template(
+        "history.html",
+        history=history,
+        services=services,
+        selected_service=service_id,
+        date_used=date_used or ""
+    )
+
+
 @app.route("/users", methods=["GET"])
 def get_users():
     conn = get_db_connection()
