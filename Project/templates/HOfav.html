@@ -53,11 +53,21 @@
       color: #009688;
       margin: 5px 0;
     }
+    .price {
+      font-weight: bold;
+      color: #FF9800;
+    }
     .no-results {
       text-align: center;
       padding: 40px;
       color: #666;
       grid-column: 1 / -1;
+    }
+      button {
+      background: #FF9800;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -66,20 +76,23 @@
     <h1>Shortlisted Cleaners</h1>
     <nav>
       <a href="/home">Home</a>
-      <a href="#">Cart</a>
+      <a href="/fav">Shortlist</a>
+      <a href="#">History</a>
       <a href="#">Contact</a>
     </nav>
   </header>
 
   <div class="container">
-    <h2>Your Saved Favourites</h2>
+    <h2>Good day homeowner01</h2>
+    <h3>Your Saved Favourites</h3>
     <div class="cleaner-list">
       {% if favourites %}
         {% for cleaner in favourites %}
         <div class="cleaner-card">
-          <div class="cleaner-name">{{ cleaner.name }}</div>
-          <div class="service-info">Service: {{ cleaner.service }}</div>
+          <div class="cleaner-name">{{ cleaner.cleaner_name }}</div>
+          <div class="service-info">Service: {{ cleaner.service_name }}</div>
           <div class="service-info">Experience: {{ cleaner.experience }} years</div>
+          <div class="price">Price: ${{ cleaner.pricing }}</div>
           <button>Book Now</button>
         </div>
         {% endfor %}

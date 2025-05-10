@@ -122,6 +122,7 @@ def search():
 
 @app.route('/fav')
 def favourites_page():
+    session["homeowner_id"] = 4  # Force-set for testing
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
 
