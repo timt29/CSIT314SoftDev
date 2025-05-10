@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import mysql.connector
 from servicesCont import get_all_cleaners_with_services, search_cleaners, get_all_services
 from favCont import get_favourite_cleaners
+from historyCont import get_service_history
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -126,6 +127,25 @@ def favourites_page():
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
 
+
+@app.route("/history")
+def view_history():
+    from servicesCont import get_all_services  # reuse your existing service list
+    session["homeowner_id"] = 4  # Force-set for testing
+        
+    service_id = request.args.get("service_filter", type=int)
+    date_used = request.args.get("date_used")
+
+    history = get_service_history(service_id, date_used)
+    services = get_all_services()
+
+    return render_template(
+        "history.html",
+        history=history,
+        services=services,
+        selected_service=service_id,
+        date_used=date_used or ""
+    )
 @app.route("/users", methods=["GET"])
 def get_users():
     conn = get_db_connection()

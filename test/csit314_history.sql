@@ -16,33 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `favourite`
+-- Table structure for table `history`
 --
 
-DROP TABLE IF EXISTS `favourite`;
+DROP TABLE IF EXISTS `history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `favourite` (
+CREATE TABLE `history` (
   `id` int NOT NULL AUTO_INCREMENT,
   `homeowner_id` int NOT NULL,
   `cleaner_id` int NOT NULL,
   `date_saved` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_used` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_homeowner` (`homeowner_id`),
-  KEY `fk_cleaner` (`cleaner_id`),
-  CONSTRAINT `fk_cleaner` FOREIGN KEY (`cleaner_id`) REFERENCES `cleaner` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_homeowner` FOREIGN KEY (`homeowner_id`) REFERENCES `homeowner` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_history_homeowner` (`homeowner_id`),
+  KEY `fk_history_cleaner` (`cleaner_id`),
+  CONSTRAINT `fk_history_cleaner` FOREIGN KEY (`cleaner_id`) REFERENCES `cleaner` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_history_homeowner` FOREIGN KEY (`homeowner_id`) REFERENCES `homeowner` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `favourite`
+-- Dumping data for table `history`
 --
 
-LOCK TABLES `favourite` WRITE;
-/*!40000 ALTER TABLE `favourite` DISABLE KEYS */;
-INSERT INTO `favourite` VALUES (1,4,101,'2025-05-09 08:26:02'),(2,201,102,'2025-05-09 08:26:02'),(3,4,102,'2025-05-09 08:26:02'),(4,4,103,'2025-05-10 10:15:53');
-/*!40000 ALTER TABLE `favourite` ENABLE KEYS */;
+LOCK TABLES `history` WRITE;
+/*!40000 ALTER TABLE `history` DISABLE KEYS */;
+INSERT INTO `history` VALUES (1,4,100,'2025-05-09 00:26:02','2025-05-10 13:21:51'),(2,201,102,'2025-05-09 00:26:02','2025-05-02 13:21:51'),(3,4,101,'2025-05-09 00:26:02','2025-05-02 13:21:51'),(4,4,105,'2025-05-10 02:15:53','2025-05-03 13:21:51');
+/*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-10 21:11:21
+-- Dump completed on 2025-05-10 21:22:57
