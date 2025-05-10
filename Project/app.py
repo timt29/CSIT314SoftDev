@@ -16,7 +16,7 @@ def get_db_connection():
         host="localhost",
         user="root",  
         password="password", 
-        database="testingcsit314"
+        database="csit314"
     )
 
 # Initialize Controllers
