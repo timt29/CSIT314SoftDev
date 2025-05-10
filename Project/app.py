@@ -148,47 +148,6 @@ def view_history():
     )
 
 
-@app.route("/users", methods=["GET"])
-def get_users():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(users)
-
-@app.route("/api/users", methods=["GET"])
-def get_users_api():
-    """Fetch all users from the database."""
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(users)
-
-@app.route("/register", methods=["POST"])
-def register_user():
-    data = request.json
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO users (email, password, username, role, dob, description)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (
-        data["email"],
-        data["password"],
-        data["username"],
-        data["role"],
-        data["dob"],
-        data["desc"]
-    ))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "User registered"}), 201
 
 @app.route("/get_cleaner_services", methods=["GET"])
 def get_cleaner_services():
