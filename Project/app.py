@@ -29,9 +29,9 @@ login_controller(app)
 def cleaner_dashboard():
     user = session.get("user")
     if not user:
-        return redirect('/login')  # Redirect to login if not logged in
+        return redirect('/login')
 
-    user_id = user.get("id")  # Extract the user ID from session
+    user_id = user.get("UserId")  # Fix here
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -42,10 +42,10 @@ def cleaner_dashboard():
 
     # Get services assigned to the cleaner
     cursor.execute("""
-        SELECT s.name AS service_name, s.pricing, s.duration 
+        SELECT s.name AS service_name, s.price, s.duration 
         FROM service s
-        JOIN cleaner_services cs ON s.service_id = cs.service_id
-        WHERE cs.cleaner_id = %s
+        JOIN cleanerservice cs ON s.serviceid = cs.serviceid
+        WHERE cs.cleanerid = %s
     """, (user_id,))
     services = cursor.fetchall()
 
@@ -128,7 +128,7 @@ def get_cleaner_services():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT s.service_id, s.name, s.pricing, s.duration
+        SELECT s.service_id, s.name, s.price, s.duration
         FROM service s
         JOIN cleaner_services cs ON s.service_id = cs.service_id
         WHERE cs.cleaner_id = %s
@@ -145,39 +145,51 @@ def add_service():
     if not user:
         return jsonify({"error": "User not logged in"}), 401
 
-    data = request.json
-    name = data.get("name")
-    pricing = data.get("pricing")
-    duration = data.get("duration")
+    try:
+        data = request.json
+        name = data.get("name")
+        price = data.get("price")
+        duration = data.get("duration")
 
-    # Find the cleaner_id from user_id
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT cleaner_id FROM cleaner WHERE userid = %s", (user["id"],))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Cleaner not found"}), 404
+        # Check if all fields are provided
+        if not name or not price or not duration:
+            return jsonify({"error": "Missing fields"}), 400
 
-    cleaner_id = result[0]
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    # Insert into service table
-    cursor.execute("""
-        INSERT INTO service (name, pricing, duration)
-        VALUES (%s, %s, %s)
-    """, (name, pricing, duration))
-    service_id = cursor.lastrowid
+        # Find the cleaner's user ID from the session and get the cleaner's info from cleaner table
+        cursor.execute("SELECT cleanerid FROM cleaner WHERE userid = %s", (user["id"],))
+        result = cursor.fetchone()
 
-    # Link service to cleaner
-    cursor.execute("""
-        INSERT INTO cleaner_services (cleaner_id, service_id)
-        VALUES (%s, %s)
-    """, (cleaner_id, service_id))
+        if not result:
+            return jsonify({"error": "Cleaner not found"}), 404
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        cleaner_id = result['cleanerid']
 
-    return jsonify({"message": "Service added successfully"})
+        # Insert into the service table
+        cursor.execute("""
+            INSERT INTO service (name, price, duration)
+            VALUES (%s, %s, %s)
+        """, (name, price, duration))
+        service_id = cursor.lastrowid  # Get the newly inserted service ID
+
+        # Link the new service to the cleaner in the cleaner_services table
+        cursor.execute("""
+            INSERT INTO cleanerservice (cleanerid, serviceid)
+            VALUES (%s, %s)
+        """, (cleaner_id, service_id))
+
+        conn.commit()  # Commit the transaction
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Service added successfully"})
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error: {str(e)}"}), 500
 
 @app.route("/services", methods=["GET"])
 def fetch_all_services():
