@@ -16,12 +16,21 @@ class UserProfileController:
         self.register_routes()
 
     def register_routes(self):
-        # Get all user profiles
+        # Get all user profiles or search user profiles
         @self.app.route("/api/user_profiles", methods=["GET"])
         def get_user_profiles():
+            search_query = request.args.get("search", "").strip()
             conn = self.get_db_connection()
             cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM UserProfile;")
+
+            if search_query:
+                cursor.execute("""
+                    SELECT * FROM UserProfile
+                    WHERE Role LIKE %s OR Description LIKE %s
+                """, (f"%{search_query}%", f"%{search_query}%"))
+            else:
+                cursor.execute("SELECT * FROM UserProfile")
+
             profiles = cursor.fetchall()
             cursor.close()
             conn.close()

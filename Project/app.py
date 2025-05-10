@@ -5,7 +5,7 @@ from servicesCont import get_all_cleaners_with_services, search_cleaners, get_al
 from favCont import get_favourite_cleaners
 from historyCont import get_service_history
 from UserProfileController import UserProfileController
-from UserAdminController import AdminController
+from UserAdminController import AdminController, login_controller
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -16,44 +16,14 @@ def get_db_connection():
         host="localhost",
         user="root",  
         password="password", 
-        database="csit314"
+        database="testingcsit314"
     )
 
 # Initialize Controllers
 AdminController(app, get_db_connection)
 UserProfileController(app, get_db_connection)
+login_controller(app)
 
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
-        role = request.form["role"]
-
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(
-            "SELECT * FROM users WHERE email = %s AND password = %s AND role = %s",
-            (email, password, role)
-        )
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if user:
-            session["user"] = user
-            if role == "Admin User":
-                return redirect(url_for("admin_dashboard"))  # Handled by AdminController
-            elif role == "Cleaner":
-                return redirect(url_for("cleaner_dashboard"))
-            elif role == "Home Owner":
-                return redirect(url_for("home"))
-            elif role == "Platform Management":
-                return redirect(url_for("platform_dashboard"))
-        else:
-            return render_template("login.html", error="Invalid credentials or role")
-
-    return render_template("login.html")
 
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():

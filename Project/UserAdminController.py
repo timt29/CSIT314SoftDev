@@ -25,9 +25,18 @@ class AdminController:
         # Get All Users
         @self.app.route("/api/users", methods=["GET"])
         def get_users():
+            search_query = request.args.get("search", "").strip()  # Get the search query from the request
             conn = self.get_db_connection()
             cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM Users")
+
+            if search_query:
+                cursor.execute("""
+                    SELECT * FROM Users
+                    WHERE Name LIKE %s OR Email LIKE %s
+                """, (f"%{search_query}%", f"%{search_query}%"))
+            else:
+                cursor.execute("SELECT * FROM Users")
+
             users = cursor.fetchall()
             cursor.close()
             conn.close()
@@ -196,11 +205,11 @@ def login_controller(app):
 
         return render_template("login.html")
 
-    @app.route("/logout", methods=["POST"])
+    @app.route("/logout", methods=["GET"])
     def logout():
-        print("Logout endpoint called")  # Debugging log
-        session.clear()
-        return jsonify({"message": "Logged out successfully"}), 200
+        session.clear()  # Clear the session
+        return redirect(url_for("login"))  # Redirect to the login page
+
 
 # Cleaner Dashboard Route
 def dashboard_routes(app):
