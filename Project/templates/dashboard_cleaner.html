@@ -1,169 +1,4 @@
-<!--
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cleaner Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-    }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background-color: #34495e;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-    }
-    .container {
-      padding: 20px;
-    }
-    .services {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .service-card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .service-card h3 {
-      margin: 0 0 10px;
-    }
-    .actions button {
-      margin-right: 10px;
-      padding: 5px 10px;
-    }
-    .service-action-btn {
-  background: #27ae60;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>Welcome, {{ cleaner_name }}</h1>
-  </header>
-
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Logout</a>
-  </nav>
-
-  <div class="container">
-    <button class="add-service-btn">+ Add New Service</button>
-    <button class="edit-services-btn">Edit Services</button>
-
-  <div id="services-container" class="card-container"> -->
-    <!-- JavaScript will dynamically insert service cards here -->
-    <!--<p id="no-services-msg" style="display: none;">No services assigned to you.</p>
-    <div class="edit-buttons" style="display: none;">
-    <button class="service-action-btn" id="addServiceBtn">+ Add New Service</button>
-    <button class="service-action-btn" id="editServicesBtn">Edit Services</button>
-    </div>
-  </div>
-
-  <script>
-  const cleanerId = {{ cleaner_id }};
-  fetch(`/get_cleaner_services?cleaner_id=${cleanerId}`)
-    .then(response => response.json())
-    .then(services => {
-      const container = document.getElementById('services-container');
-      if (services.length === 0) {
-        container.innerHTML = '<p>No services assigned to you.</p>';
-      } else {
-        services.forEach(service => {
-          const card = document.createElement('div');
-          card.classList.add('service-card');
-          card.dataset.serviceId = service.service_id;
-          card.innerHTML = `
-            <h3>Service: ${service.name}</h3>
-            <p>Pricing: $${service.pricing}</p>
-            <p>Duration: ${service.duration} hours</p>
-          `;
-          container.appendChild(card);
-        });
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
-</script>
-<script>
-let editMode = false;
-
-document.getElementById("editServicesBtn").addEventListener("click", () => {
-  editMode = !editMode;
-  document.querySelectorAll(".service-card").forEach(card => {
-    card.querySelector(".edit-buttons").style.display = editMode ? "block" : "none";
-    card.querySelectorAll("[contenteditable]").forEach(el => {
-      el.setAttribute("contenteditable", editMode);
-    });
-  });
-});
-
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("update-btn")) {
-    const card = e.target.closest(".service-card");
-    const id = card.dataset.serviceId;
-    const name = card.querySelector(".service-name").innerText;
-    const pricing = parseFloat(card.querySelector(".service-pricing").innerText.replace(/[^\d.]/g, ''));
-    const duration = parseInt(card.querySelector(".service-duration").innerText.replace(/[^\d]/g, ''));
-
-    fetch(`http://localhost:5000/update_service/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, pricing, duration })
-    }).then(res => res.json()).then(data => {
-      alert("Service updated successfully");
-    });
-  }
-
-  if (e.target.classList.contains("delete-btn")) {
-    const card = e.target.closest(".service-card");
-    const id = card.dataset.serviceId;
-
-    fetch(`http://localhost:5000/delete_service/${id}`, {
-      method: "DELETE"
-    }).then(res => res.json()).then(data => {
-      alert("Service deleted");
-      card.remove();
-    });
-  }
-});
-</script>
-
-</body>
-</html>
-</body>
-</html>
-
--->
-
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -245,6 +80,143 @@ document.addEventListener("click", function (e) {
       {% endif %}
     </div>
   </div>
+
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cleaner Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .service-table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+        .service-table th, .service-table td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+        .service-table th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            text-align: center;
+            margin: 20px;
+        }
+        .dashboard-button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .dashboard-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h1>Welcome, {{ cleaner_name }}</h1>
+    </div>
+
+    <div class="button-container">
+        <button class="dashboard-button" onclick="openModal()">Add New Service</button>
+        <button class="dashboard-button">Edit Services</button>
+    </div>
+
+    <div id="addServiceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
+    <h3>Add New Service</h3>
+    <form id="addServiceForm">
+      <label>Service Name:</label><br>
+      <input type="text" name="name" required><br><br>
+      <label>Pricing ($):</label><br>
+      <input type="number" name="pricing" required><br><br>
+      <label>Duration (hours):</label><br>
+      <input type="number" name="duration" required><br><br>
+      <button type="submit">Submit</button>
+      <button type="button" onclick="closeModal()">Cancel</button>
+    </form>
+    </div>
+    </div>
+
+    <table class="service-table">
+        <thead>
+            <tr>
+                <th>Service Name</th>
+                <th>Pricing ($)</th>
+                <th>Duration (hours)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+                <tr>
+                    <td>{{ service.service_name }}</td>
+                    <td>{{ service.pricing }}</td>
+                    <td>{{ service.duration }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No services found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Modal open/close
+    window.openModal = function() {
+        document.getElementById("addServiceModal").style.display = "block";
+    };
+
+    window.closeModal = function() {
+        document.getElementById("addServiceModal").style.display = "none";
+    };
+
+    // AJAX form submission
+    document.getElementById("addServiceForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {
+            name: formData.get("name"),
+            pricing: formData.get("pricing"),
+            duration: formData.get("duration")
+        };
+
+        fetch("/add_service", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(response => {
+            alert(response.message);
+            window.location.reload();  // Refresh to show new service
+        })
+        .catch(error => {
+            alert("Error adding service.");
+            console.error(error);
+        });
+    });
+});
+</script>
 
 </body>
 </html>
