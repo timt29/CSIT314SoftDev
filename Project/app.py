@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import mysql.connector
 from servicesCont import get_all_cleaners_with_services, search_cleaners, get_all_services
 from favCont import get_favourite_cleaners
+from UserProfileController import UserProfileController
+from UserAdminController import AdminController
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -13,8 +15,12 @@ def get_db_connection():
         host="localhost",
         user="root",  
         password="password", 
-        database="csit314"
+        database="testingcsit314"
     )
+
+# Initialize Controllers
+AdminController(app, get_db_connection)
+UserProfileController(app, get_db_connection)
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -36,21 +42,17 @@ def login():
         if user:
             session["user"] = user
             if role == "Admin User":
-                return redirect(url_for("admin_dashboard"))  # Correct endpoint name
+                return redirect(url_for("admin_dashboard"))  # Handled by AdminController
             elif role == "Cleaner":
-                return redirect(url_for("cleaner_dashboard"))  # Correct endpoint name
+                return redirect(url_for("cleaner_dashboard"))
             elif role == "Home Owner":
-                return redirect(url_for("home"))  # Correct endpoint name
+                return redirect(url_for("home"))
             elif role == "Platform Management":
-                return redirect(url_for("platform_dashboard"))  # Correct endpoint name
+                return redirect(url_for("platform_dashboard"))
         else:
             return render_template("login.html", error="Invalid credentials or role")
 
     return render_template("login.html")
-
-@app.route("/dashboard_admin")
-def admin_dashboard():
-    return render_template("dashboard_admin.html")
 
 @app.route("/dashboard_cleaner")
 def cleaner_dashboard():
@@ -124,48 +126,6 @@ def search():
 def favourites_page():
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
-
-@app.route("/users", methods=["GET"])
-def get_users():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(users)
-
-@app.route("/api/users", methods=["GET"])
-def get_users_api():
-    """Fetch all users from the database."""
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(users)
-
-@app.route("/register", methods=["POST"])
-def register_user():
-    data = request.json
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO users (email, password, username, role, dob, description)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (
-        data["email"],
-        data["password"],
-        data["username"],
-        data["role"],
-        data["dob"],
-        data["desc"]
-    ))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "User registered"}), 201
 
 @app.route("/get_cleaner_services", methods=["GET"])
 def get_cleaner_services():
