@@ -28,12 +28,9 @@ CREATE TABLE `cleaner` (
   `name` varchar(45) NOT NULL,
   `dob` date NOT NULL,
   `experience` double NOT NULL COMMENT 'years of experience',
-  `service_id` int NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`userid`),
-  KEY `fk_cleaner_service` (`service_id`),
-  CONSTRAINT `fk_cleaner_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -43,7 +40,7 @@ CREATE TABLE `cleaner` (
 
 LOCK TABLES `cleaner` WRITE;
 /*!40000 ALTER TABLE `cleaner` DISABLE KEYS */;
-INSERT INTO `cleaner` VALUES (1,'pass123','cleaner01','1999-09-09',10,2,'2025-05-07 12:02:33','2025-05-09 13:46:33'),(100,'david','david','1980-10-11',3,1,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(101,'alice','alice','1999-04-20',1,1,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(102,'nancy','nancy','1985-05-22',5,3,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(103,'mary','mary','1960-12-30',20,1,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(105,'YY','yiyang','2000-01-01',5,2,'2025-05-07 12:02:33','2025-05-07 12:02:33');
+INSERT INTO `cleaner` VALUES (1,'pass123','cleaner01','1999-09-09',10,'2025-05-07 12:02:33','2025-05-09 13:46:33'),(100,'david','david','1980-10-11',3,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(101,'alice','alice','1999-04-20',1,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(102,'nancy','nancy','1985-05-22',5,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(103,'mary','mary','1960-12-30',20,'2025-05-07 11:53:39','2025-05-07 11:53:39'),(105,'YY','yiyang','2000-01-01',5,'2025-05-07 12:02:33','2025-05-07 12:02:33');
 /*!40000 ALTER TABLE `cleaner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-10  3:04:45
+-- Dump completed on 2025-05-10 16:51:25

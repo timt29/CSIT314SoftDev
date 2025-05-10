@@ -124,6 +124,7 @@ def search():
 
 @app.route('/fav')
 def favourites_page():
+    session["homeowner_id"] = 4  # Force-set for testing
     cleaners = get_favourite_cleaners()
     return render_template('HOfav.html', favourites=cleaners)
 
@@ -147,35 +148,48 @@ def get_cleaner_services():
 
     return jsonify(cleaner_services)
 
-@app.route('/update_service/<int:service_id>', methods=['PUT'])
-def update_service(service_id):
+@app.route('/add_service', methods=['POST'])
+def add_service():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "User not logged in"}), 401
+
     data = request.json
+    name = data.get("name")
+    pricing = data.get("pricing")
+    duration = data.get("duration")
 
+    # Find the cleaner_id from user_id
     conn = get_db_connection()
     cursor = conn.cursor()
+    cursor.execute("SELECT cleaner_id FROM cleaner WHERE userid = %s", (user["id"],))
+    result = cursor.fetchone()
+    if not result:
+        return jsonify({"error": "Cleaner not found"}), 404
+
+    cleaner_id = result[0]
+
+    # Insert into service table
     cursor.execute("""
-        UPDATE service
-        SET name = %s, pricing = %s, duration = %s
-        WHERE service_id = %s
-    """, (data['name'], data['pricing'], data['duration'], service_id))
+        INSERT INTO service (name, pricing, duration)
+        VALUES (%s, %s, %s)
+    """, (name, pricing, duration))
+    service_id = cursor.lastrowid
+
+    # Link service to cleaner
+    cursor.execute("""
+        INSERT INTO cleaner_services (cleaner_id, service_id)
+        VALUES (%s, %s)
+    """, (cleaner_id, service_id))
+
     conn.commit()
     cursor.close()
     conn.close()
 
-    return jsonify({'message': 'Service updated'})
-
-@app.route('/delete_service/<int:service_id>', methods=['DELETE'])
-def delete_service(service_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM service WHERE service_id = %s', (service_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({'message': 'Service deleted'})
+    return jsonify({"message": "Service added successfully"})
 
 @app.route("/services", methods=["GET"])
-def get_all_services():
+def fetch_all_services():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM service")

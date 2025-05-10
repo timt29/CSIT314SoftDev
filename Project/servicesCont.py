@@ -24,7 +24,8 @@ def get_all_cleaners_with_services() -> List[Dict]:
             s.duration,
             CONCAT('$', s.pricing) as formatted_price
         FROM cleaner c
-        JOIN service s ON c.service_id = s.service_id
+        LEFT JOIN cleaner_services cs ON c.userid = cs.cleaner_id
+        LEFT JOIN service s ON cs.service_id = s.service_id
         ORDER BY c.name ASC
         """
         cursor.execute(query)
@@ -52,16 +53,15 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
         cursor = conn.cursor(dictionary=True)
         
         query = """
-        SELECT 
-            c.userid,
-            c.name as cleaner_name,
-            c.experience,
-            s.name as service_name,
-            s.pricing,
-            s.duration,
-            CONCAT('$', s.pricing) as formatted_price
+        SELECT DISTINCT 
+        c.userid, 
+        c.name AS cleaner_name,
+        s.name AS service_name,
+        s.pricing,
+        s.duration
         FROM cleaner c
-        JOIN service s ON c.service_id = s.service_id
+        JOIN cleaner_services cs ON c.userid = cs.cleaner_id
+        JOIN service s ON cs.service_id = s.service_id
         WHERE 1=1
         """
         params = []

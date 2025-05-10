@@ -20,11 +20,21 @@ def get_favourite_cleaners():
             return []  # No logged-in user
 
         query = """
-            SELECT c.userid, c.name, c.experience, c.service
-            FROM favourite f
-            JOIN cleaner c ON f.cleaner_id = c.userid
-            WHERE f.homeowner_id = %s
-            ORDER BY f.date_saved DESC
+        SELECT
+                c.name AS cleaner_name,
+                s.pricing,
+                s.name AS service_name,
+                c.experience
+            FROM
+                csit314.favourite f
+            JOIN
+                csit314.cleaner c ON f.cleaner_id = c.userid
+            JOIN
+                csit314.cleaner_services cs ON c.userid = cs.cleaner_id
+            JOIN
+                csit314.service s ON cs.service_id = s.service_id
+            WHERE
+                f.homeowner_id = %s
         """
         cursor.execute(query, (homeowner_id,))
         favourites = cursor.fetchall()
