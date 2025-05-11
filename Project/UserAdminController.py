@@ -26,16 +26,18 @@ class AdminController:
         @self.app.route("/api/users", methods=["GET"])
         def get_users():
             search_query = request.args.get("search", "").strip()  # Get the search query from the request
-            conn = self.get_db_connection()
+            conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
             if search_query:
+                # Search by name or email
                 cursor.execute("""
-                    SELECT * FROM Users
-                    WHERE Name LIKE %s OR Email LIKE %s
+                    SELECT * FROM users
+                    WHERE name LIKE %s OR email LIKE %s
                 """, (f"%{search_query}%", f"%{search_query}%"))
             else:
-                cursor.execute("SELECT * FROM Users")
+                # Fetch all users if no search query is provided
+                cursor.execute("SELECT * FROM users")
 
             users = cursor.fetchall()
             cursor.close()

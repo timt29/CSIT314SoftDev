@@ -354,8 +354,10 @@
     }
 
     async function loadProfileTable(searchQuery = "") {
+        console.log(`Loading profiles with search query: ${searchQuery}`); // Debugging log
         const response = await fetch(`/api/user_profiles?search=${encodeURIComponent(searchQuery)}`);
         const profiles = await response.json();
+        console.log(`Profiles Returned:`, profiles); // Debugging log
 
         let rows = "";
 
@@ -371,12 +373,10 @@
                 </tr>`;
         });
 
-        // Update only the table body
         const tableBody = document.querySelector("#profile-table tbody");
         if (tableBody) {
             tableBody.innerHTML = rows;
         } else {
-            // If the table doesn't exist, render the entire table
             document.getElementById('content').innerHTML = `
                 <h3>User Profiles</h3>
                 <input type="text" id="profile-search" placeholder="Search by role or description" value="${searchQuery}" oninput="searchProfiles()" />
@@ -399,6 +399,7 @@
     // Function to handle profile search
     function searchProfiles() {
         const searchQuery = document.getElementById("profile-search").value;
+        console.log(`Search Query for Profiles: ${searchQuery}`); // Debugging log
         loadProfileTable(searchQuery);
     }
 
@@ -536,4 +537,5 @@
 
 </body>
 </html>
+``` 
 

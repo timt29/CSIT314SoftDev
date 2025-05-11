@@ -16,26 +16,6 @@ class UserProfileController:
         self.register_routes()
 
     def register_routes(self):
-        # Get all user profiles or search user profiles
-        @self.app.route("/api/user_profiles", methods=["GET"])
-        def get_user_profiles():
-            search_query = request.args.get("search", "").strip()
-            conn = self.get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-
-            if search_query:
-                cursor.execute("""
-                    SELECT * FROM UserProfile
-                    WHERE Role LIKE %s OR Description LIKE %s
-                """, (f"%{search_query}%", f"%{search_query}%"))
-            else:
-                cursor.execute("SELECT * FROM UserProfile")
-
-            profiles = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            return jsonify(profiles)
-
         # Create a new user profile
         @self.app.route("/api/user_profiles", methods=["POST"])
         def create_user_profile():
@@ -103,3 +83,36 @@ class UserProfileController:
                 conn.close()
 
             return jsonify({"message": "User profile deleted successfully"}), 200
+
+        # Get user profiles
+        @self.app.route("/api/user_profiles", methods=["GET"])
+        def get_user_profiles():
+            search_query = request.args.get("search", "").strip()
+            print(f"Search Query: {search_query}")  # Debugging log
+
+            conn = self.get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            try:
+                if search_query:
+                    query = """
+                        SELECT * FROM UserProfile
+                        WHERE Role LIKE %s OR Description LIKE %s
+                    """
+                    print(f"Executing Query: {query} with params: {search_query}")  # Debugging log
+                    cursor.execute(query, (f"%{search_query}%", f"%{search_query}%"))
+                else:
+                    query = "SELECT * FROM UserProfile"
+                    print(f"Executing Query: {query}")  # Debugging log
+                    cursor.execute(query)
+
+                profiles = cursor.fetchall()
+                print(f"Profiles Returned: {profiles}")  # Debugging log
+            except mysql.connector.Error as err:
+                print(f"Database Error: {err}")  # Log database errors
+                return jsonify({"error": "Database error occurred"}), 500
+            finally:
+                cursor.close()
+                conn.close()
+
+            return jsonify(profiles)
