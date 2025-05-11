@@ -127,6 +127,7 @@
     <header>
         <h1>Cleaner Dashboard</h1>
         <nav>
+            <a href="/home" style="margin-left: 1rem;">Home</a>
             <a href="/">Logout</a>
         </nav>
     </header>
@@ -202,6 +203,9 @@
         document.getElementById('closeButton').style.display = 'inline-block'; // Show Close button
         document.getElementById('closeButton').onclick = closeModal;
         document.getElementById('serviceForm').reset();
+
+        // Hide the delete button when adding a new service
+        document.getElementById('deleteButton').style.display = 'none'; // Hide delete button for Add New Service
     }
 
     // Close modal
