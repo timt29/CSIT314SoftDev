@@ -136,7 +136,7 @@ class CleanerController:
                 if cursor.rowcount == 0:
                     return jsonify({"error": "Service not found"}), 404
 
-                return jsonify({"message": "Service updated"}), 200
+                return jsonify({"message": "Service updated successfully"}), 200
             except mysql.connector.Error as err:
                 return jsonify({"error": f"Database error: {err}"}), 500
             finally:
@@ -160,7 +160,7 @@ class CleanerController:
                 if cursor.rowcount == 0:
                     return jsonify({"error": "Service not found"}), 404
 
-                return jsonify({"message": "Service deleted"}), 200
+                return jsonify({"message": "Service deleted successfully"}), 200
             except mysql.connector.Error as err:
                 return jsonify({"error": f"Database error: {err}"}), 500
             finally:
