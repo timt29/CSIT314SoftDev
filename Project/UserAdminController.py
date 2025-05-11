@@ -102,27 +102,56 @@ class AdminController:
         @self.app.route("/api/users/<string:email>", methods=["PUT"])
         def update_user(email):
             data = request.json
+            new_email = data.get("new_email", email)  # Default to the current email if not provided
+            name = data.get("name")  # Name can be None if not provided
+            role = data.get("role")  # Role can be None if not provided
+
             try:
-                conn = self.get_db_connection()
+                conn = get_db_connection()
                 cursor = conn.cursor()
-                cursor.execute("""
-                    UPDATE Users
-                    SET Name = %s, Role = %s
-                    WHERE Email = %s
-                """, (
-                    data["name"],
-                    data["role"],
-                    email
-                ))
+
+                # Check if the new email already exists (only if the email is being changed)
+                if new_email != email:
+                    cursor.execute("SELECT * FROM users WHERE email = %s", (new_email,))
+                    existing_user = cursor.fetchone()
+                    if existing_user:
+                        return jsonify({"error": "Email already in use"}), 409
+
+                # Build the SQL query dynamically based on the fields provided
+                update_fields = []
+                update_values = []
+
+                if new_email != email:
+                    update_fields.append("email = %s")
+                    update_values.append(new_email)
+                if name:
+                    update_fields.append("name = %s")
+                    update_values.append(name)
+                if role:
+                    update_fields.append("role = %s")
+                    update_values.append(role)
+
+                # Add the current email to the WHERE clause
+                update_values.append(email)
+
+                # Execute the update query
+                if update_fields:
+                    query = f"UPDATE users SET {', '.join(update_fields)} WHERE email = %s"
+                    cursor.execute(query, tuple(update_values))
+                    conn.commit()
+
                 if cursor.rowcount == 0:
-                    return jsonify({"message": "User not found"}), 404
-                conn.commit()
-                return jsonify({"message": "User updated successfully"}), 200
-            except mysql.connector.Error as err:
-                return jsonify({"message": f"Database error: {err}"}), 500
-            finally:
+                    return jsonify({"error": "User not found"}), 404
+
                 cursor.close()
                 conn.close()
+
+                return jsonify({"message": "User updated successfully"}), 200
+
+            except mysql.connector.Error as err:
+                return jsonify({"error": f"Database error: {err}"}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error: {str(e)}"}), 500
 
         # Suspend User
         @self.app.route("/api/users/<string:email>/suspend", methods=["PATCH"])
@@ -148,7 +177,7 @@ class AdminController:
         # Manage User Profiles (GET and POST)
         @self.app.route("/api/user_profiles", methods=["GET", "POST"])
         def manage_user_profiles():
-            conn = self.get_db_connection()
+            conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
             if request.method == "GET":

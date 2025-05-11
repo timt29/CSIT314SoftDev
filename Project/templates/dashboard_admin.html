@@ -3,132 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f8;
-        }
-        .header {
-            background-color: #343a40;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .tabs {
-            margin: 20px 30px;
-        }
-        .tab {
-            display: inline-block;
-            margin-right: 20px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .tab:hover {
-            background: #0056b3;
-        }
-        #content {
-            margin: 20px 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        input[type="text"], 
-        input[type="password"], 
-        input[type="date"],
-        input[type="email"],
-        select {
-            display: block;
-            width: 80%;
-            padding: 10px 12px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-            background-color: #fff;
-        }
-        textarea {
-            display: block;
-            width: 80%;
-            padding: 10px 12px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-            background-color: #fff;
-            resize: vertical; /* Allow vertical resizing */
-            min-height: 100px; /* Set a minimum height */
-        }
-        button {
-            padding: 8px 12px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        .action-button {
-            background-color: #ffc107;
-            color: black;
-            margin-right: 5px;
-        }
-        .action-button:hover {
-            background-color: #e0a800;
-        }
-        .suspend-button {
-            background-color: #dc3545;
-            color: white;
-        }
-        .suspend-button:hover {
-            background-color: #c82333;
-        }
-        #user-detail, #update-user-form {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-        }
-        form {
-            max-width: 500px;
-            margin: auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/dashboard_admin.css">
 </head>
 <body>
 
@@ -148,9 +23,59 @@
 <div id="user-detail"></div>
 <div id="update-user-form"></div>
 
+<!-- Modal for Updating User Profiles -->
+<div id="updateProfileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('updateProfileModal')">&times;</span>
+        <h3>Update User Profile</h3>
+        <form id="update-profile-form">
+            <div class="form-group">
+                <label>Role:</label>
+                <input id="modal-role" type="text" readonly>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea id="modal-description" placeholder="Enter new description"></textarea>
+            </div>
+            <button type="button" onclick="updateUserProfile()">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Updating Users -->
+<div id="updateUserModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('updateUserModal')">&times;</span>
+        <h3>Update User</h3>
+        <form id="update-user-form">
+            <div class="form-group">
+                <label>Current Email:</label>
+                <input id="modal-email" type="text" readonly>
+            </div>
+            <div class="form-group">
+                <label>New Email:</label>
+                <input id="modal-new-email" type="text" placeholder="Enter new email">
+            </div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input id="modal-name" type="text" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+                <label>Role:</label>
+                <select id="update-role"></select>
+            </div>
+            <button type="button" onclick="updateUser()">Save Changes</button>
+        </form>
+    </div>
+</div>
+
 <script>
     function logout() {
         window.location.href = "/logout";  // Redirect to the logout route
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
     }
 
     async function loadUserTable(searchQuery = "") {
@@ -250,64 +175,88 @@
     }
 
     async function showUpdateForm(email) {
-        const response = await fetch('/api/users');
-        const users = await response.json();
-        const user = users.find(u => u.Email === email);
+        try {
+            // Fetch all users
+            const response = await fetch('/api/users');
+            const users = await response.json();
+            const user = users.find(u => u.Email === email);
 
-        const rolesResponse = await fetch('/api/user_profiles');
-        const profiles = await rolesResponse.json();
+            if (!user) {
+                alert("User not found!");
+                return;
+            }
 
-        const roleOptions = profiles.map(profile => `
-            <option value="${profile.Role}" ${profile.Role === user.Role ? 'selected' : ''}>
-                ${profile.Role}
-            </option>
-        `).join('');
+            // Fetch all user profiles (roles)
+            const rolesResponse = await fetch('/api/user_profiles');
+            const profiles = await rolesResponse.json();
+            console.log("Profiles fetched:", profiles); // Debugging log
 
-        // Clear the user detail view if it's open
-        document.getElementById('user-detail').innerHTML = '';
+            // Generate role options
+            const roleOptions = profiles.map(profile => `
+                <option value="${profile.Role}" ${profile.Role === user.Role ? 'selected' : ''}>
+                    ${profile.Role}
+                </option>
+            `).join('');
 
-        document.getElementById('update-user-form').innerHTML = `
-            <h3>Update User - ${user.Email}</h3>
-            <form id="update-form">
-                <div class="form-group">
-                    <label>Name:</label>
-                    <input id="update-name" type="text" value="${user.Name}" placeholder="Enter Name">
-                </div>
-                <div class="form-group">
-                    <label>Role:</label>
-                    <select id="update-role">
-                        ${roleOptions}
-                    </select>
-                </div>
-                <button type="button" onclick="updateUser('${user.Email}')">Save Changes</button>
-                <button type="button" onclick="closeUpdateForm()">Close</button>
-            </form>
-        `;
+            // Populate the modal fields
+            const emailField = document.getElementById('modal-email');
+            const newEmailField = document.getElementById('modal-new-email');
+            const nameField = document.getElementById('modal-name');
+            const roleField = document.getElementById('update-role');
+
+            emailField.value = user.Email; // Current email
+            newEmailField.value = user.Email; // Default new email
+            newEmailField.defaultValue = user.Email; // Store original value
+            nameField.value = user.Name;
+            nameField.defaultValue = user.Name; // Store original value
+            roleField.innerHTML = roleOptions;
+            roleField.defaultValue = user.Role; // Store original value
+
+            // Show the modal
+            document.getElementById('updateUserModal').style.display = 'block';
+        } catch (error) {
+            console.error("Error in showUpdateForm:", error);
+            alert("Failed to load user details or roles.");
+        }
     }
 
-    // Function to close the update user form
-    function closeUpdateForm() {
-        document.getElementById('update-user-form').innerHTML = '';
-    }
-
-    async function updateUser(email) {
-        const name = document.getElementById('update-name').value;
+    async function updateUser() {
+        const currentEmail = document.getElementById('modal-email').value; // Current email
+        const newEmail = document.getElementById('modal-new-email').value; // New email
+        const name = document.getElementById('modal-name').value;
         const role = document.getElementById('update-role').value;
 
-        console.log("Data being sent:", { name, role });
+        // Prepare the payload with only the changed fields
+        const payload = {};
+        if (newEmail !== currentEmail) {
+            payload.new_email = newEmail;
+        }
+        if (name !== document.getElementById('modal-name').defaultValue) {
+            payload.name = name;
+        }
+        if (role !== document.getElementById('update-role').defaultValue) {
+            payload.role = role;
+        }
 
-        const response = await fetch(`/api/users/${email}`, {
+        // Send the update request only if there are changes
+        if (Object.keys(payload).length === 0) {
+            alert("No changes to update.");
+            return;
+        }
+
+        const response = await fetch(`/api/users/${currentEmail}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, role })
+            body: JSON.stringify(payload)
         });
 
         if (response.ok) {
             alert("User updated successfully!");
-            loadUserTable();
+            closeModal('updateUserModal');
+            loadUserTable(); // Reload the user table
         } else {
             const error = await response.json();
-            alert(`Failed to update user: ${error.message}`);
+            alert(`Failed to update user: ${error.error}`);
         }
     }
 
@@ -355,7 +304,7 @@
 
     async function loadProfileTable(searchQuery = "") {
         console.log(`Loading profiles with search query: ${searchQuery}`); // Debugging log
-        const response = await fetch(`/api/user_profiles?search=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`/api/profiles?search=${encodeURIComponent(searchQuery)}`);
         const profiles = await response.json();
         console.log(`Profiles Returned:`, profiles); // Debugging log
 
@@ -460,17 +409,11 @@
     }
 
     function showUpdateProfileForm(role, description) {
-        document.getElementById('update-user-form').innerHTML = `
-            <h3>Update User Profile - ${role}</h3>
-            <form id="update-profile-form">
-                <div class="form-group">
-                    <label>Description:</label>
-                    <textarea id="update-description" placeholder="Enter new description" required>${description}</textarea>
-                </div>
-                <button type="button" onclick="updateUserProfile('${role}')">Save Changes</button>
-                <button type="button" onclick="closeUpdateProfileForm()">Close</button>
-            </form>
-        `;
+        document.getElementById('modal-role').value = role;
+        document.getElementById('modal-description').value = description;
+
+        // Show the modal
+        document.getElementById('updateProfileModal').style.display = 'block';
     }
 
     // Function to close the update user profile form
@@ -478,8 +421,9 @@
         document.getElementById('update-user-form').innerHTML = '';
     }
 
-    async function updateUserProfile(role) {
-        const description = document.getElementById('update-description').value;
+    async function updateUserProfile() {
+        const role = document.getElementById('modal-role').value;
+        const description = document.getElementById('modal-description').value;
 
         const response = await fetch(`/api/user_profiles/${role}`, {
             method: 'PUT',
@@ -489,10 +433,11 @@
 
         if (response.ok) {
             alert("User profile updated successfully!");
+            closeModal('updateProfileModal');
             loadProfileTable(); // Reload the profile table
         } else {
             const error = await response.json();
-            alert(`Failed to update user profile: ${error.message}`);
+            alert(`Failed to update user profile: ${error.error}`);
         }
     }
 
@@ -537,5 +482,4 @@
 
 </body>
 </html>
-``` 
 

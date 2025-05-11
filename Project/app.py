@@ -31,7 +31,7 @@ def cleaner_dashboard():
     if not user:
         return redirect('/login')
 
-    user_id = user.get("UserId")  # Fix here
+    user_id = user.get("UserId")
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -45,7 +45,7 @@ def cleaner_dashboard():
         SELECT s.name AS service_name, s.price, s.duration 
         FROM service s
         JOIN cleanerservice cs ON s.serviceid = cs.serviceid
-        WHERE cs.cleanerid = %s
+        WHERE cs.userid = %s
     """, (user_id,))
     services = cursor.fetchall()
 
@@ -121,17 +121,18 @@ def view_history():
 
 @app.route("/get_cleaner_services", methods=["GET"])
 def get_cleaner_services():
-    cleaner_id = session.get("user", {}).get("id")
+    user = session.get("user")
+    cleaner_id = user.get("UserId") if user else None
     if not cleaner_id:
         return jsonify({"error": "User not logged in"}), 401
-    
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT s.service_id, s.name, s.price, s.duration
+        SELECT s.serviceid, s.name, s.price, s.duration
         FROM service s
-        JOIN cleaner_services cs ON s.service_id = cs.service_id
-        WHERE cs.cleaner_id = %s
+        JOIN cleanerservice cs ON s.serviceid = cs.serviceid
+        WHERE cs.userid = %s
     """, (cleaner_id,))
     cleaner_services = cursor.fetchall()
     cursor.close()
@@ -148,48 +149,114 @@ def add_service():
     try:
         data = request.json
         name = data.get("name")
-        price = data.get("price")
-        duration = data.get("duration")
+        price = float(data.get("price"))
+        duration = float(data.get("duration"))
 
-        # Check if all fields are provided
         if not name or not price or not duration:
             return jsonify({"error": "Missing fields"}), 400
 
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Find the cleaner's user ID from the session and get the cleaner's info from cleaner table
-        cursor.execute("SELECT cleanerid FROM cleaner WHERE userid = %s", (user["id"],))
+        cursor.execute("SELECT userid FROM cleaner WHERE userid = %s", (user["UserId"],))
         result = cursor.fetchone()
 
         if not result:
             return jsonify({"error": "Cleaner not found"}), 404
 
-        cleaner_id = result['cleanerid']
+        user_id = result['userid']
 
-        # Insert into the service table
         cursor.execute("""
             INSERT INTO service (name, price, duration)
             VALUES (%s, %s, %s)
         """, (name, price, duration))
-        service_id = cursor.lastrowid  # Get the newly inserted service ID
+        service_id = cursor.lastrowid
 
-        # Link the new service to the cleaner in the cleaner_services table
         cursor.execute("""
-            INSERT INTO cleanerservice (cleanerid, serviceid)
+            INSERT INTO cleanerservice (userid, serviceid)
             VALUES (%s, %s)
-        """, (cleaner_id, service_id))
+        """, (user_id, service_id))
 
-        conn.commit()  # Commit the transaction
+        conn.commit()
         cursor.close()
         conn.close()
 
-        return jsonify({"message": "Service added successfully"})
+        return jsonify({
+            "message": "Service added successfully",
+            "serviceid": service_id,
+            "cleanerid": user_id
+        })
 
     except mysql.connector.Error as err:
         return jsonify({"error": f"Database error: {err}"}), 500
     except Exception as e:
         return jsonify({"error": f"Error: {str(e)}"}), 500
+    
+@app.route('/update_service/<int:service_id>', methods=['PUT'])
+def update_service(service_id):
+    data = request.json
+    name = data.get("name")
+    price = data.get("price")
+    duration = data.get("duration")
+
+    if not name or not price or not duration:
+        return jsonify({"error": "Missing fields"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE service
+            SET name = %s, price = %s, duration = %s
+            WHERE serviceid = %s
+        """, (name, price, duration, service_id))
+
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Service not found"}), 404
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Service updated successfully"}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error: {str(e)}"}), 500
+    
+    
+@app.route("/delete_service/<int:id>", methods=["DELETE"])
+def delete_service(id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # First, delete from the cleanerservice table to avoid foreign key constraint issues
+        cursor.execute("""
+            DELETE FROM cleanerservice WHERE serviceid = %s
+        """, (id,))
+
+        # Then, delete the service from the service table
+        cursor.execute("""
+            DELETE FROM service WHERE serviceid = %s
+        """, (id,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "message": "Service deleted successfully"
+        })
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error: {str(e)}"}), 500
+
 
 @app.route("/services", methods=["GET"])
 def fetch_all_services():

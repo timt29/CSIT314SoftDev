@@ -85,7 +85,7 @@ class UserProfileController:
             return jsonify({"message": "User profile deleted successfully"}), 200
 
         # Get user profiles
-        @self.app.route("/api/user_profiles", methods=["GET"])
+        @self.app.route("/api/profiles", methods=["GET"])
         def get_user_profiles():
             search_query = request.args.get("search", "").strip()
             print(f"Search Query: {search_query}")  # Debugging log

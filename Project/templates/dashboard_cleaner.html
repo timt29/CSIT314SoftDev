@@ -1,222 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cleaner Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cleaner Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .dashboard-button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .dashboard-button:hover {
+            background-color: #2980b9;
+        }
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .service-table th, .service-table td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+        .service-table th {
+            background-color: #f2f2f2;
+        }
+        /* Custom Modal Styles */
+        #serviceModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        #serviceModal .modal-content {
+            background: white;
+            padding: 20px;
+            width: 500px; /* Modal width */
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    header {
-      background-color: #333;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        #serviceModal h5 {
+            margin-bottom: 20px;
+        }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 1rem;
-    }
+        /* Adjusting the input width and size */
+        #serviceModal input {
+            width: 80%; /* Adjust width to be 80% of the modal's width */
+            max-width: 400px; /* Optional: set a max width to prevent excessive stretching */
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
 
-    .container {
-      max-width: 1200px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+        #serviceModal button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-    .dashboard-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        #serviceModal button[type="submit"] {
+            background-color: #3498db;
+            color: white;
+        }
 
-    .button-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+        #serviceModal button[type="button"] {
+            background-color: #ccc;
+        }
 
-    .dashboard-button {
-      padding: 10px 20px;
-      margin: 10px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .dashboard-button:hover {
-      background-color: #2980b9;
-    }
-
-    .service-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    .service-table th, .service-table td {
-      border: 1px solid #ccc;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .service-table th {
-      background-color: #f2f2f2;
-    }
-
-    /* Modal Styles */
-    #addServiceModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    #addServiceModal .modal-content {
-      background: white;
-      margin: 10% auto;
-      padding: 20px;
-      width: 400px;
-      border-radius: 8px;
-    }
-
-    #addServiceModal input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    #addServiceModal button {
-      padding: 10px 15px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    #addServiceModal button[type="submit"] {
-      background-color: #3498db;
-      color: white;
-    }
-
-    #addServiceModal button[type="button"] {
-      background-color: #ccc;
-    }
-  </style>
+        /* Ensure buttons are evenly spaced at the bottom */
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Cleaner Dashboard</h1>
+        <nav>
+            <a href="/">Logout</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="dashboard-header">
+            <h2>Welcome, {{ cleaner_name }}</h2>
+        </div>
+        <div class="button-container">
+            <button class="dashboard-button" onclick="openModal()">Add New Service</button>
+            <button class="dashboard-button" onclick="toggleEdit()">Edit Services</button>
+        </div>
+        
+        <!-- Custom Modal for Adding or Editing Service -->
+        <div id="serviceModal">
+            <div class="modal-content">
+                <h5 id="modalTitle">Add New Service</h5>
+                <form id="serviceForm">
+                    <div class="mb-3">
+                        <label for="serviceName" class="form-label">Service Name</label>
+                        <input type="text" class="form-control" id="serviceName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="servicePrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="servicePrice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceDuration" class="form-label">Duration (in hours)</label>
+                        <input type="number" class="form-control" id="serviceDuration" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="submitButton">Update</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteService()">Delete</button>
+                        <button type="button" class="btn btn-secondary" id="closeButton" onclick="closeModal()">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-<header>
-  <h1>Cleaner Dashboard</h1>
-  <nav>
-    <a href="/">Logout</a>
-  </nav>
-</header>
-
-<div class="container">
-
-  <div class="dashboard-header">
-    <h2>Welcome, {{ cleaner_name }}</h2>
-  </div>
-
-  <div class="button-container">
-    <button class="dashboard-button" onclick="openModal()">Add New Service</button>
-    <button class="dashboard-button">Edit Services</button>
-  </div>
-
-  <!-- Modal -->
-  <div id="addServiceModal">
-    <div class="modal-content">
-      <h3>Add New Service</h3>
-      <form id="addServiceForm">
-        <label>Service Name:</label><br>
-        <input type="text" name="name" required><br>
-        <label>Price ($):</label><br>
-        <input type="number" name="price" required><br>
-        <label>Duration (hours):</label><br>
-        <input type="number" name="duration" required><br>
-        <button type="submit">Submit</button>
-        <button type="button" onclick="closeModal()">Cancel</button>
-      </form>
+        <table class="service-table">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Price ($)</th>
+                    <th>Duration (hours)</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr id="service_{{ service.id }}">
+                    <td>{{ service.service_name }}</td>
+                    <td>{{ service.price }}</td>
+                    <td>{{ service.duration }}</td>
+                    <td><button class="edit-button" style="display:none" onclick="editService('{{ service.id }}')">Edit</button></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No services found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-  </div>
+    <script>
+    let currentServiceId = null;
 
-  <table class="service-table">
-    <thead>
-      <tr>
-        <th>Service Name</th>
-        <th>Price ($)</th>
-        <th>Duration (hours)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for service in services %}
-      <tr>
-        <td>{{ service.service_name }}</td>
-        <td>{{ service.price }}</td>
-        <td>{{ service.duration }}</td>
-      </tr>
-      {% else %}
-      <tr>
-        <td colspan="3">No services found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+    // Show modal
+    function openModal() {
+        document.getElementById('serviceModal').style.display = 'flex';
+        document.getElementById('modalTitle').textContent = "Add New Service";
+        document.getElementById('submitButton').textContent = "Submit";
+        document.getElementById('submitButton').onclick = addService;
+        document.getElementById('closeButton').style.display = 'inline-block'; // Show Close button
+        document.getElementById('closeButton').onclick = closeModal;
+        document.getElementById('serviceForm').reset();
+    }
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    window.openModal = function () {
-      document.getElementById("addServiceModal").style.display = "block";
-    };
+    // Close modal
+    function closeModal() {
+        document.getElementById('serviceModal').style.display = 'none';
+    }
 
-    window.closeModal = function () {
-      document.getElementById("addServiceModal").style.display = "none";
-    };
+    // Toggle edit buttons
+    function toggleEdit() {
+        var editButtons = document.querySelectorAll('.edit-button');
+        editButtons.forEach(function(button) {
+            button.style.display = (button.style.display === 'none') ? 'inline-block' : 'none';
+        });
+    }
 
-    document.getElementById("addServiceForm").addEventListener("submit", function (event) {
-      event.preventDefault();
+    // Open modal to edit service
+    function editService(serviceId) {
+        currentServiceId = serviceId; // Set the currentServiceId to the service being edited
+        const serviceRow = document.getElementById('service_' + serviceId); // Find the row by service ID
+        const serviceName = serviceRow.children[0].innerText; // Get service name from the row
+        const servicePrice = serviceRow.children[1].innerText; // Get service price from the row
+        const serviceDuration = serviceRow.children[2].innerText; // Get service duration from the row
 
-      const formData = new FormData(this);
-      const data = {
-        name: formData.get("name"),
-        price: formData.get("price"),
-        duration: formData.get("duration")
-      };
+        // Populate the modal with the service data
+        document.getElementById('modalTitle').textContent = "Edit Service";
+        document.getElementById('serviceName').value = serviceName;
+        document.getElementById('servicePrice').value = servicePrice;
+        document.getElementById('serviceDuration').value = serviceDuration;
 
-      fetch("/add_service", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(res => res.json())
-        .then(response => {
-          alert(response.message);
-          window.location.reload();
+        document.getElementById('submitButton').textContent = "Update";
+        document.getElementById('submitButton').onclick = updateService; // Use updateService function
+
+        document.getElementById('deleteButton').style.display = 'inline-block';  // Show Delete button
+        document.getElementById('closeButton').textContent = "Close"; // Set Close button to Close text
+        document.getElementById('closeButton').onclick = closeModal; // Use closeModal function
+
+        document.getElementById('serviceModal').style.display = 'flex'; // Show the modal
+    }
+
+    // Add new service
+    function addService(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('serviceName').value;
+        const price = document.getElementById('servicePrice').value;
+        const duration = document.getElementById('serviceDuration').value;
+
+        const payload = { name, price, duration };
+
+        fetch('/add_service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Service added successfully!');
+                closeModal(); 
+                location.reload();
+            } else if (data.error) {
+                alert('Error: ' + data.error);
+            }
         })
         .catch(error => {
-          console.error("Error:", error);
-          alert("Error adding service.");
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
         });
-    });
-  });
-</script>
+    }
 
+    // Update service
+    function updateService(e) {
+        e.preventDefault();
+
+        const updatedName = document.getElementById('serviceName').value;
+        const updatedPrice = document.getElementById('servicePrice').value;
+        const updatedDuration = document.getElementById('serviceDuration').value;
+
+        if (currentServiceId === null) {
+            alert("No service selected for update!");
+            return;
+        }
+
+        fetch(`/update_service/${currentServiceId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: updatedName, price: updatedPrice, duration: updatedDuration })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Service updated successfully") {
+                alert("Service updated!");
+                location.reload(); // Reload to reflect changes
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to update service.");
+        });
+    }
+
+    function deleteService() {
+        if (confirm("Are you sure you want to delete this service?")) {
+            fetch(`/delete_service/${currentServiceId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === "Service deleted successfully") {
+                        alert("Service deleted!");
+                        document.getElementById('service_' + currentServiceId).remove(); // Remove from the UI
+                        closeModal(); // Close the modal
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Failed to delete service.");
+                });
+        }
+    }
+
+    </script>
 </body>
 </html>
+
+
