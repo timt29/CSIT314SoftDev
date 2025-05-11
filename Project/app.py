@@ -191,6 +191,72 @@ def add_service():
         return jsonify({"error": f"Database error: {err}"}), 500
     except Exception as e:
         return jsonify({"error": f"Error: {str(e)}"}), 500
+    
+@app.route('/update_service/<int:service_id>', methods=['PUT'])
+def update_service(service_id):
+    data = request.json
+    name = data.get("name")
+    price = data.get("price")
+    duration = data.get("duration")
+
+    if not name or not price or not duration:
+        return jsonify({"error": "Missing fields"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE service
+            SET name = %s, price = %s, duration = %s
+            WHERE serviceid = %s
+        """, (name, price, duration, service_id))
+
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Service not found"}), 404
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Service updated successfully"}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error: {str(e)}"}), 500
+    
+    
+@app.route("/delete_service/<int:id>", methods=["DELETE"])
+def delete_service(id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # First, delete from the cleanerservice table to avoid foreign key constraint issues
+        cursor.execute("""
+            DELETE FROM cleanerservice WHERE serviceid = %s
+        """, (id,))
+
+        # Then, delete the service from the service table
+        cursor.execute("""
+            DELETE FROM service WHERE serviceid = %s
+        """, (id,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "message": "Service deleted successfully"
+        })
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error: {str(e)}"}), 500
+
 
 @app.route("/services", methods=["GET"])
 def fetch_all_services():
