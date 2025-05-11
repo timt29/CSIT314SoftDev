@@ -176,8 +176,8 @@
             </thead>
             <tbody>
                 {% for service in services %}
-                <tr id="service_{{ service.id }}">
-                    <td>{{ service.service_name }}</td>
+                <tr id="service_{{ service.serviceid }}">
+                    <td>{{ service.name }}</td>
                     <td>{{ service.price }}</td>
                     <td>{{ service.duration }}</td>
                     <td><button class="edit-button" style="display:none" onclick="editService('{{ service.id }}')">Edit</button></td>
@@ -251,7 +251,7 @@
 
         const payload = { name, price, duration };
 
-        fetch('/add_service', {
+        fetch('/api/cleaner/services', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
