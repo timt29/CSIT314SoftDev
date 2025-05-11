@@ -167,29 +167,33 @@
         </div>
 
         <table class="service-table">
-            <thead>
-                <tr>
-                    <th>Service Name</th>
-                    <th>Price ($)</th>
-                    <th>Duration (hours)</th>
-                    <th>Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for service in services %}
-                <tr id="service_{{ service.serviceid }}">
-                    <td>{{ service.name }}</td>
-                    <td>{{ service.price }}</td>
-                    <td>{{ service.duration }}</td>
-                    <td><button class="edit-button" style="display:none" onclick="editService({{ service.serviceid }})">Edit</button></td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4">No services found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <thead>
+            <tr>
+                <th>Service Name</th>
+                <th>Price ($)</th>
+                <th>Duration (hours)</th>
+                <th>Views</th>
+                <th>Shortlisted</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+            <tr id="service_{{ service.serviceid }}">
+                <td>{{ service.name }}</td>
+                <td>{{ service.price }}</td>
+                <td>{{ service.duration }}</td>
+                <td>{{ service.view_count | default(0) }}</td>
+                <td>{{ service.shortlist_count | default(0) }}</td>
+                <td><button class="edit-button" style="display:none" onclick="editService({{ service.serviceid }})">Edit</button></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No services found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     </div>
     <script>
     let currentServiceId = null;
@@ -331,6 +335,17 @@
         }
     }
 
+    function trackView(serviceId) {
+        fetch(`/api/services/${serviceId}/view`, {
+            method: 'POST'
+        }).catch(error => console.error('View tracking failed:', error));
+    }
+
+    function trackShortlist(serviceId) {
+        fetch(`/api/services/${serviceId}/shortlist`, {
+            method: 'POST'
+        }).catch(error => console.error('Shortlist tracking failed:', error));
+    }
     </script>
 </body>
 </html>
