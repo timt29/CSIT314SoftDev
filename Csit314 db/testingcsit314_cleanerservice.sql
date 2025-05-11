@@ -23,12 +23,12 @@ DROP TABLE IF EXISTS `cleanerservice`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cleanerservice` (
-  `CleanerId` int NOT NULL,
+  `UserId` int NOT NULL,
   `ServiceId` int NOT NULL,
-  PRIMARY KEY (`CleanerId`,`ServiceId`),
+  PRIMARY KEY (`UserId`,`ServiceId`),
   KEY `ServiceId` (`ServiceId`),
-  CONSTRAINT `cleanerservice_ibfk_1` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE,
-  CONSTRAINT `cleanerservice_ibfk_2` FOREIGN KEY (`ServiceId`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE
+  CONSTRAINT `cleanerservice_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `cleanerservice_ibfk_2` FOREIGN KEY (`ServiceId`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -38,7 +38,7 @@ CREATE TABLE `cleanerservice` (
 
 LOCK TABLES `cleanerservice` WRITE;
 /*!40000 ALTER TABLE `cleanerservice` DISABLE KEYS */;
-INSERT INTO `cleanerservice` VALUES (6,1),(6,2);
+INSERT INTO `cleanerservice` VALUES (6,1),(6,2),(6,3),(6,5);
 /*!40000 ALTER TABLE `cleanerservice` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-10 19:07:10
+-- Dump completed on 2025-05-11 18:26:32
