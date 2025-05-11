@@ -13,7 +13,7 @@ async function loadUserTable(searchQuery = "") {
     let rows = "";
 
     users.forEach(user => {
-        const formattedDoB = new Date(user.DoB).toLocaleDateString(); // Format the date
+        const formattedDoB = new Date(user.DoB).toLocaleDateString();
         rows += `
             <tr>
                 <td><a href="#" onclick="viewUserDetails('${user.Email}')">${user.Email}</a></td>
@@ -60,23 +60,33 @@ function searchUsers() {
 }
 
 async function viewUserDetails(email) {
-    const response = await fetch('/api/users');
-    const users = await response.json();
-    const user = users.find(u => u.Email === email);
+    try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        const user = users.find(u => u.Email === email);
 
-    document.getElementById('update-user-form').innerHTML = '';
+        if (!user) {
+            alert("User not found!");
+            return;
+        }
 
-    const formattedDoB = new Date(user.DoB).toLocaleDateString();
+        const formattedDoB = new Date(user.DoB).toLocaleDateString();
 
-    document.getElementById('user-detail').innerHTML = `
-        <h3>User Details</h3>
-        <p><strong>Email:</strong> ${user.Email}</p>
-        <p><strong>Name:</strong> ${user.Name}</p>
-        <p><strong>Role:</strong> ${user.Role}</p>
-        <p><strong>Date of Birth:</strong> ${formattedDoB}</p>
-        <p><strong>Status:</strong> ${user.Status}</p>
-        <button onclick="closeUserDetail()">Close</button>
-    `;
+        // Populate the modal with user details
+        document.getElementById('view-user-details').innerHTML = `
+            <p><strong>Email:</strong> ${user.Email}</p>
+            <p><strong>Name:</strong> ${user.Name}</p>
+            <p><strong>Role:</strong> ${user.Role}</p>
+            <p><strong>Date of Birth:</strong> ${formattedDoB}</p>
+            <p><strong>Status:</strong> ${user.Status}</p>
+        `;
+
+        // Show the modal
+        document.getElementById('viewUserModal').style.display = 'block';
+    } catch (error) {
+        console.error("Error in viewUserDetails:", error);
+        alert("Failed to load user details.");
+    }
 }
 
 function closeUserDetail() {
