@@ -355,7 +355,7 @@
 
     async function loadProfileTable(searchQuery = "") {
         console.log(`Loading profiles with search query: ${searchQuery}`); // Debugging log
-        const response = await fetch(`/api/user_profiles?search=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`/api/profiles?search=${encodeURIComponent(searchQuery)}`);
         const profiles = await response.json();
         console.log(`Profiles Returned:`, profiles); // Debugging log
 
@@ -537,5 +537,4 @@
 
 </body>
 </html>
-``` 
 
