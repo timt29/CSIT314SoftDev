@@ -1,8 +1,13 @@
 import mysql.connector
 from flask import session
-
 def get_service_history(service_id=None, date_used=None):
     try:
+        user = session.get("user")
+        if not user:
+            return []
+
+        homeowner_id = user.get("UserId")
+
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -13,22 +18,20 @@ def get_service_history(service_id=None, date_used=None):
         )
         cursor = conn.cursor(dictionary=True)
 
-        homeowner_id = session.get("homeowner_id")
-        if not homeowner_id:
-            return []
-
         query = """
-        SELECT h.date_used, c.name AS cleaner_name, s.name AS service_name, s.pricing
+        SELECT 
+            h.date_used, 
+            c.name AS cleaner_name, 
+            s.name AS service_name, 
+            s.price
         FROM history h
-        JOIN cleaner c ON h.cleaner_id = c.userid
-        JOIN cleaner_services cs ON c.userid = cs.cleaner_id
-        JOIN service s ON cs.service_id = s.service_id
-        WHERE h.homeowner_id = %s
+        JOIN cleaner c ON h.cleanerid = c.userid
+        JOIN service s ON h.serviceid = s.serviceid
+        WHERE h.homeownerid = %s
         """
         params = [homeowner_id]
-
         if service_id:
-            query += " AND s.service_id = %s"
+            query += " AND s.serviceid = %s"
             params.append(service_id)
 
         if date_used:
@@ -42,7 +45,6 @@ def get_service_history(service_id=None, date_used=None):
     except mysql.connector.Error as err:
         print(f"MySQL Error: {err}")
         return []
-
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()

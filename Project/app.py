@@ -178,6 +178,19 @@ def favourites_page():
 
 @app.route("/history")
 def view_history():
+    user = session.get("user")
+    if not user:
+        return redirect('/')
+
+    user_id = user.get("UserId")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+    homeowner = cursor.fetchone()
+
+    if not homeowner:
+        return "homeowner not found", 404
     from servicesCont import get_all_services
 
     service_id = request.args.get("service_filter", type=int)
@@ -191,7 +204,8 @@ def view_history():
         history=history,
         services=services,
         selected_service=service_id,
-        date_used=date_used or ""
+        date_used=date_used or "",
+        homeowner_name=homeowner["name"]
     )
 
 @app.route("/services", methods=["GET"])

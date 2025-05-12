@@ -66,13 +66,14 @@
       <a href="/">Logout</a>
     </nav>
   </header>
-
+    <h2>Welcome, {{ homeowner_name }}</h2>
+    <h3>Your History of Service Used </h3>
   <div class="container">
         <form method="GET">
             <select name="service_filter">
                 <option value="">All Services</option>
                 {% for s in services %}
-                <option value="{{ s.service_id }}" {% if selected_service == s.service_id|string %}selected{% endif %}>
+                <option value="{{ s.serviceid }}" {% if selected_service == s.serviceid|string %}selected{% endif %}>
                 {{ s.name }}
                 </option>
                 {% endfor %}
@@ -86,7 +87,7 @@
       <div class="history-card">
         <div><strong>Cleaner:</strong> {{ h.cleaner_name }}</div>
         <div><strong>Service:</strong> {{ h.service_name }}</div>
-        <div><strong>Price:</strong> ${{ h.pricing }}</div>
+        <div><strong>Price:</strong> ${{ h.price }}</div>
         <div><strong>Date Used:</strong> {{ h.date_used }}</div>
       </div>
       {% endfor %}

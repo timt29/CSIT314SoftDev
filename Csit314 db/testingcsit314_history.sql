@@ -25,11 +25,14 @@ DROP TABLE IF EXISTS `history`;
 CREATE TABLE `history` (
   `HomeOwnerId` int NOT NULL,
   `CleanerId` int NOT NULL,
-  `Date_Saved` date DEFAULT NULL,
-  PRIMARY KEY (`HomeOwnerId`),
+  `ServiceID` int NOT NULL,
+  `Date_Used` date NOT NULL,
+  PRIMARY KEY (`HomeOwnerId`,`CleanerId`,`ServiceID`),
   KEY `fk2_idx` (`CleanerId`),
+  KEY `fk3_idx` (`ServiceID`),
   CONSTRAINT `fk1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  CONSTRAINT `fk2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT
+  CONSTRAINT `fk2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk3` FOREIGN KEY (`ServiceID`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -39,7 +42,7 @@ CREATE TABLE `history` (
 
 LOCK TABLES `history` WRITE;
 /*!40000 ALTER TABLE `history` DISABLE KEYS */;
-INSERT INTO `history` VALUES (7,14,'2025-05-13');
+INSERT INTO `history` VALUES (7,6,1,'2025-05-10'),(7,6,2,'2025-05-12'),(7,6,3,'2025-05-11'),(7,6,10,'2025-05-10'),(7,14,1,'2025-05-13');
 /*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13  4:41:11
+-- Dump completed on 2025-05-13  4:56:11
