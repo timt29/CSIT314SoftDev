@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cleaner Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .dashboard-button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .dashboard-button:hover {
+            background-color: #2980b9;
+        }
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .service-table th, .service-table td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+        .service-table th {
+            background-color: #f2f2f2;
+        }
+        #successMessage {
+            display: none;
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cleaner Information</h1>
+        <nav>
+            <a href="/home">Home</a>
+            <a href="/">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h2> {{ cleaner_name }}</h2>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage"></div>
+
+        <!-- Services Table -->
+        <table class="service-table">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Price ($)</th>
+                    <th>Duration (hours)</th>
+                    <th>Bookings</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr id="service_{{ service.serviceid }}">
+                    <td>{{ service.name }}</td>
+                    <td>{{ service.price }}</td>
+                    <td>{{ service.duration }}</td>
+                    <td>
+                        <button class="dashboard-button" onclick="handleBooking({{ service.serviceid }})">Book Now</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No services found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function handleBooking(serviceId) {
+            fetch('/book_service', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include CSRF token if required by your framework:
+                    // 'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ service_id: serviceId })
+            })
+            .then(response => {
+                if (response.ok) {
+                    showSuccessMessage("Service has been booked successfully!");
+                } else {
+                    alert("Booking failed. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Booking error:', error);
+                alert("An error occurred. Please try again later.");
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const msgBox = document.getElementById('successMessage');
+            msgBox.textContent = message;
+            msgBox.style.display = 'block';
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+
+

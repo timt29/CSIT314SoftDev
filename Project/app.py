@@ -30,6 +30,65 @@ CleanerController(app, get_db_connection)
 def platform_dashboard():
     return render_template("dashboard_platform.html")
 
+
+'''@app.route("/cleanerinfo")
+def cleaner_info():
+            user = session.get("user")
+            if not user:
+                return redirect('/')
+
+            user_id = user.get("UserId")
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
+            cleaner = cursor.fetchone()
+
+            cursor.execute("""
+                SELECT s.serviceid, s.name, s.price, s.duration
+                FROM service s
+                JOIN cleanerservice cs ON s.serviceid = cs.serviceid
+                WHERE cs.userid = %s
+            """, (user_id,))
+            services = cursor.fetchall()
+
+            cursor.close()
+            conn.close()
+
+            if not cleaner:
+                return "Cleaner not found", 404
+
+            return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services)'''
+
+@app.route("/cleanerinfo")
+def cleaner_info():
+    # Hardcoding the user_id as 6
+    user_id = 6  # Directly set to 6 to simulate login
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Query for cleaner info based on hardcoded user_id (6)
+    cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
+    cleaner = cursor.fetchone()
+
+    # Query for services provided by this cleaner
+    cursor.execute("""
+        SELECT s.serviceid, s.name, s.price, s.duration
+        FROM service s
+        JOIN cleanerservice cs ON s.serviceid = cs.serviceid
+        WHERE cs.userid = %s
+    """, (user_id,))
+    services = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    if not cleaner:
+        return "Cleaner not found", 404
+
+    return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services)
+
 @app.route("/home")
 def home():
     cleaners = get_all_cleaners_with_services()
@@ -96,6 +155,42 @@ def fetch_all_services():
     conn.close()
 
     return jsonify(services)
+
+@app.route("/book_service", methods=["POST"])
+def book_service():
+    # Get the service_id from the POST data
+    data = request.get_json()  # Expecting JSON body in the request
+    
+    service_id = data.get('service_id')
+    homeowner_id = session.get('homeowner_id')  # Assuming homeowner ID is stored in the session
+    cleaner_id = data.get('cleaner_id')  # The cleaner that the homeowner is booking
+    
+    if not service_id or not homeowner_id or not cleaner_id:
+        return jsonify({"message": "Missing required information!"}), 400
+
+    # Connect to the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Insert booking into the database
+        query = """
+            INSERT INTO bookings (homeowner_id, service_id, cleaner_id, booking_date)
+            VALUES (%s, %s, %s, NOW())
+        """
+        cursor.execute(query, (homeowner_id, service_id, cleaner_id))
+        conn.commit()  # Commit the transaction
+
+        # Optionally, you can fetch the booking ID or any other info you need
+        # booking_id = cursor.lastrowid
+
+        return jsonify({"message": "Service has been booked successfully!"}), 200
+    except Exception as e:
+        conn.rollback()  # If there was an error, rollback the transaction
+        return jsonify({"message": f"Error booking service: {str(e)}"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000/")
