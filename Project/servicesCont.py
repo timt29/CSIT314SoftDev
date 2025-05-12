@@ -60,7 +60,7 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
         s.duration
         FROM cleaner c
         JOIN cleanerservice cs ON c.UserId = cs.UserId
-        JOIN service s ON cs.serviceid = s.serviceid
+        JOIN service s ON cs.ServiceId = s.ServiceId
         WHERE 1=1
         """
         params = []
@@ -70,7 +70,7 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
             params.append(f"%{name_query}%")
             
         if service_id:
-            query += " AND s.serviceid = %s"
+            query += " AND s.ServiceId = %s"
             params.append(service_id)
             
         query += " ORDER BY c.name ASC"
@@ -97,7 +97,7 @@ def get_all_services() -> List[Dict]:
             auth_plugin='mysql_native_password'
         )
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM service ORDER BY name")
+        cursor.execute("SELECT  serviceid, name  FROM service ORDER BY name")
         return cursor.fetchall()
     except mysql.connector.Error as err:
         print(f"MySQL Error: {err}")

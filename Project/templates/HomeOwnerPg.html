@@ -99,7 +99,7 @@
 <body>
     <div class="container">
         <div class="search-box">
-            <h1>Welcome homeowner01</h1>
+            <h2>Welcome, {{ homeowner_name }}</h2>
             <h2>Find Cleaning Professionals</h2>
             <form class="search-form" action="/search" method="post">
                 <input type="text" name="search_query" placeholder="Search by name..." 
@@ -128,7 +128,9 @@
                     <div class="price">
                         Price: {{ cleaner.formatted_price }} ({{ cleaner.duration }} hours)
                     </div>
-                    <button>Information</button>
+                    <a href="/cleanerinfo">
+                    <button type="button">Information</button>
+                    </a>
                     <button>Book Now</button>
                 </div>
                 {% endfor %}

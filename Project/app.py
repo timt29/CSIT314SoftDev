@@ -91,6 +91,21 @@ def cleaner_info():
 
 @app.route("/home")
 def home():
+
+    user = session.get("user")
+    if not user:
+        return redirect('/')
+
+    user_id = user.get("UserId")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+    homeowner = cursor.fetchone()
+
+    if not homeowner:
+        return "homeowner not found", 404
+
     cleaners = get_all_cleaners_with_services()
     services = get_all_services()
     return render_template(
@@ -98,11 +113,27 @@ def home():
         cleaners=cleaners,
         services=services,
         search_query="",
-        selected_service=""
+        selected_service="",
+        homeowner_name=homeowner["name"]
     )
 
 @app.route("/search", methods=["POST"])
 def search():
+    
+    user = session.get("user")
+    if not user:
+        return redirect('/')
+
+    user_id = user.get("UserId")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+    homeowner = cursor.fetchone()
+
+    if not homeowner:
+        return "homeowner not found", 404
+
     search_query = request.form.get("search_query", "").strip()
     selected_service = request.form.get("service_filter", "")
     
@@ -118,7 +149,9 @@ def search():
         cleaners=cleaners,
         services=services,
         search_query=search_query,
-        selected_service=selected_service
+        selected_service=selected_service,
+        homeowner_name=homeowner["name"]
+
     )
 
 @app.route('/fav')
