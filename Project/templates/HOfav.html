@@ -83,7 +83,7 @@
   </header>
 
   <div class="container">
-    <h2>Good day homeowner01</h2>
+    <h2>Welcome, {{ homeowner_name }}</h2>
     <h3>Your Saved Favourites</h3>
     <div class="cleaner-list">
       {% if favourites %}
@@ -91,8 +91,7 @@
         <div class="cleaner-card">
           <div class="cleaner-name">{{ cleaner.cleaner_name }}</div>
           <div class="service-info">Service: {{ cleaner.service_name }}</div>
-          <div class="service-info">Experience: {{ cleaner.experience }} years</div>
-          <div class="price">Price: ${{ cleaner.pricing }}</div>
+          <div class="price">Price: ${{ cleaner.price}}</div>
           <button>Book Now</button>
         </div>
         {% endfor %}

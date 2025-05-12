@@ -157,9 +157,24 @@ def search():
 
 @app.route('/fav')
 def favourites_page():
-    session["homeowner_id"] = 4  # Force-set for testing
-    cleaners = get_favourite_cleaners()
-    return render_template('HOfav.html', favourites=cleaners)
+    user = session.get("user")
+    if not user:
+        return redirect('/')
+
+    user_id = user.get("UserId")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+    homeowner = cursor.fetchone()
+
+    if not homeowner:
+        return "homeowner not found", 404
+    cleaners = get_favourite_cleaners(user_id)
+    return render_template(
+        'HOfav.html',
+        favourites=cleaners,
+        homeowner_name=homeowner["name"])
 
 @app.route("/history")
 def view_history():

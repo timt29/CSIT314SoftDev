@@ -3,7 +3,7 @@
 import mysql.connector
 from flask import session
 
-def get_favourite_cleaners():
+def get_favourite_cleaners(homeowner_id :int):
     try:
         conn = mysql.connector.connect(
             host="localhost",
@@ -14,27 +14,21 @@ def get_favourite_cleaners():
             auth_plugin='mysql_native_password'
         )
         cursor = conn.cursor(dictionary=True)
-
-        homeowner_id = session.get("homeowner_id")
-        if not homeowner_id:
-            return []  # No logged-in user
-
         query = """
         SELECT
                 c.name AS cleaner_name,
-                s.pricing,
-                s.name AS service_name,
-                c.experience
+                s.price,
+                s.name AS service_name
             FROM
                 testingcsit314.favourite f
             JOIN
-                testingcsit314.cleaner c ON f.cleaner_id = c.userid
+                testingcsit314.cleaner c ON f.cleanerid = c.userid
             JOIN
-                testingcsit314.cleaner_services cs ON c.userid = cs.cleaner_id
+                testingcsit314.cleanerservice cs ON c.userid = cs.userid
             JOIN
-                testingcsit314.service s ON cs.service_id = s.service_id
+                testingcsit314.service s ON cs.serviceid = s.serviceid
             WHERE
-                f.homeowner_id = %s
+                f.homeownerid = %s
         """
         cursor.execute(query, (homeowner_id,))
         favourites = cursor.fetchall()
