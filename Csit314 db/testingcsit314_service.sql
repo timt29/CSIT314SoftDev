@@ -29,8 +29,10 @@ CREATE TABLE `service` (
   `Duration` int NOT NULL,
   `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `UpdatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `views_count` int DEFAULT '0',
+  `shortlisted_count` int DEFAULT '0',
   PRIMARY KEY (`ServiceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +41,7 @@ CREATE TABLE `service` (
 
 LOCK TABLES `service` WRITE;
 /*!40000 ALTER TABLE `service` DISABLE KEYS */;
-INSERT INTO `service` VALUES (1,'Basic Cleaning',50.00,60,'2025-05-10 10:13:42','2025-05-10 10:13:42'),(2,'Deep Cleaning',120.00,120,'2025-05-10 10:13:42','2025-05-10 10:13:42'),(3,'Move-out Cleaning',150.00,150,'2025-05-10 10:13:42','2025-05-10 10:13:42'),(5,'Dog Cleaning',20.00,2,'2025-05-11 10:24:55','2025-05-11 10:24:55');
+INSERT INTO `service` VALUES (1,'Basic Cleaning',50.00,6,'2025-05-10 10:13:42','2025-05-11 20:25:32',0,0),(2,'Deep Cleaning',120.00,120,'2025-05-10 10:13:42','2025-05-10 10:13:42',0,0),(3,'Move-out Cleaning',150.00,150,'2025-05-10 10:13:42','2025-05-10 10:13:42',0,0),(5,'Dog Cleaning',20.00,2,'2025-05-11 10:24:55','2025-05-11 10:24:55',0,0),(6,'Walking My Dog Tim',20.00,2,'2025-05-11 10:41:16','2025-05-11 10:41:16',0,0),(7,'Walking My Dog Tim2',20.00,30,'2025-05-11 11:00:40','2025-05-11 18:27:59',0,0),(10,'Testing',20.00,2,'2025-05-11 18:29:55','2025-05-11 18:29:55',0,0);
 /*!40000 ALTER TABLE `service` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-11 18:26:32
+-- Dump completed on 2025-05-12  4:29:46
