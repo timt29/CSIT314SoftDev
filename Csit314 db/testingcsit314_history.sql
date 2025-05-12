@@ -16,29 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `homeowner`
+-- Table structure for table `history`
 --
 
-DROP TABLE IF EXISTS `homeowner`;
+DROP TABLE IF EXISTS `history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `homeowner` (
-  `UserId` int NOT NULL,
-  `Name` varchar(100) DEFAULT NULL,
-  `Role` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`UserId`),
-  CONSTRAINT `homeowner_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE
+CREATE TABLE `history` (
+  `HomeOwnerId` int NOT NULL,
+  `CleanerId` int NOT NULL,
+  `Date_Saved` date DEFAULT NULL,
+  PRIMARY KEY (`HomeOwnerId`),
+  KEY `fk2_idx` (`CleanerId`),
+  CONSTRAINT `fk1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `homeowner`
+-- Dumping data for table `history`
 --
 
-LOCK TABLES `homeowner` WRITE;
-/*!40000 ALTER TABLE `homeowner` DISABLE KEYS */;
-INSERT INTO `homeowner` VALUES (2,'bob','Home Owner'),(7,'homeowneruser1','Home Owner'),(12,'testing','Home Owner');
-/*!40000 ALTER TABLE `homeowner` ENABLE KEYS */;
+LOCK TABLES `history` WRITE;
+/*!40000 ALTER TABLE `history` DISABLE KEYS */;
+INSERT INTO `history` VALUES (7,14,'2025-05-13');
+/*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13  1:19:30
+-- Dump completed on 2025-05-13  1:19:29

@@ -33,7 +33,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`UserId`),
   KEY `Role` (`Role`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`Role`) REFERENCES `userprofile` (`Role`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'alice@example.com','alice1','123','Admin User','1995-06-18','Suspended'),(2,'bob@example.com','bob','123','Home Owner','1995-06-18','Active'),(3,'bob@gmail.com','boby','123','Admin User','2025-05-02','Active'),(4,'johannisthebest@gmail.com','johann10/10','123','Admin User','2025-05-02','Active'),(5,'admin1@example.com','adminuser1','123','Admin User','1985-05-01','Active'),(6,'cleaner1@example.com','cleaneruser1','123','Cleaner','1990-03-10','Active'),(7,'homeowner1@example.com','homeowneruser1','123','Home Owner','1988-08-22','Active'),(8,'manager1@example.com','mgmtuser1','123','Platform Management','1992-12-12','Suspended'),(9,'tired@gmail.com','AAAAA','123','Home Owner','2016-05-12','Active'),(10,'toto@gmail.com','Totodile','123','Home Owner','2025-05-02','Active'),(11,'diee@gmail.com','deaddd','123','Admin User','2025-05-01','Active'),(12,'testing@gmail.com','testing','123','Home Owner','2025-05-01','Active');
+INSERT INTO `users` VALUES (1,'alice@example.com','alice1','123','Admin User','1995-06-18','Suspended'),(2,'bob@example.com','bob','123','Home Owner','1995-06-18','Active'),(3,'bob@gmail.com','boby','123','Admin User','2025-05-02','Suspended'),(4,'johannisthebest@gmail.com','johann10/10','123','Admin User','2025-05-02','Active'),(5,'admin1@example.com','adminuser1','123','Admin User','1985-05-01','Active'),(6,'cleaner1@example.com','cleaneruser1','123','Cleaner','1990-03-10','Active'),(7,'homeowner1@example.com','homeowneruser1','123','Home Owner','1988-08-22','Active'),(8,'manager1@example.com','mgmtuser1','123','Platform Management','1992-12-12','Suspended'),(9,'tired@gmail.com','AAAAA','123','Home Owner','2016-05-12','Active'),(10,'toto@gmail.com','Totodile','123','Home Owner','2025-05-02','Active'),(11,'diee@gmail.com','deaddd','123','Admin User','2025-05-01','Active'),(12,'testing@gmail.com','testing','123','Home Owner','2025-05-01','Active'),(13,'tim@example.com','tim','123','Admin User','2025-05-13','Active'),(14,'dog@example.com','dog','123','Cleaner','2025-05-13','Active');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -55,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-12  4:29:46
+-- Dump completed on 2025-05-13  1:19:29

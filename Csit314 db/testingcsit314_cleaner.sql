@@ -37,7 +37,7 @@ CREATE TABLE `cleaner` (
 
 LOCK TABLES `cleaner` WRITE;
 /*!40000 ALTER TABLE `cleaner` DISABLE KEYS */;
-INSERT INTO `cleaner` VALUES (6,'cleaneruser1','Cleaner');
+INSERT INTO `cleaner` VALUES (6,'cleaneruser1','Cleaner'),(14,'dog','Cleaner');
 /*!40000 ALTER TABLE `cleaner` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-12  4:29:46
+-- Dump completed on 2025-05-13  1:19:29

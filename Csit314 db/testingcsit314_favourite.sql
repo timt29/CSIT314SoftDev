@@ -24,11 +24,11 @@ DROP TABLE IF EXISTS `favourite`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `favourite` (
   `HomeOwnerId` int NOT NULL,
-  `ServiceId` int NOT NULL,
-  PRIMARY KEY (`HomeOwnerId`,`ServiceId`),
-  KEY `ServiceId` (`ServiceId`),
+  `CleanerId` int NOT NULL,
+  PRIMARY KEY (`HomeOwnerId`),
+  KEY `favourite_ibfk_2_idx` (`CleanerId`),
   CONSTRAINT `favourite_ibfk_1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE,
-  CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`ServiceId`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE
+  CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -38,7 +38,7 @@ CREATE TABLE `favourite` (
 
 LOCK TABLES `favourite` WRITE;
 /*!40000 ALTER TABLE `favourite` DISABLE KEYS */;
-INSERT INTO `favourite` VALUES (2,2);
+INSERT INTO `favourite` VALUES (2,6),(7,14);
 /*!40000 ALTER TABLE `favourite` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-12  4:29:45
+-- Dump completed on 2025-05-13  1:19:30

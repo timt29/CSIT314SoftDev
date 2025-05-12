@@ -37,7 +37,7 @@ CREATE TABLE `useradmin` (
 
 LOCK TABLES `useradmin` WRITE;
 /*!40000 ALTER TABLE `useradmin` DISABLE KEYS */;
-INSERT INTO `useradmin` VALUES (1,'alice1','Admin User'),(2,'bob','Home Owner'),(3,'boby','Admin User'),(4,'johann10/10','Admin User'),(5,'adminuser1','Admin User'),(6,'cleaneruser1','Cleaner'),(7,'homeowneruser1','Home Owner'),(8,'mgmtuser1','Platform Management'),(11,'deaddd','Admin User');
+INSERT INTO `useradmin` VALUES (1,'alice1','Admin User'),(2,'bob','Home Owner'),(3,'boby','Admin User'),(4,'johann10/10','Admin User'),(5,'adminuser1','Admin User'),(6,'cleaneruser1','Cleaner'),(7,'homeowneruser1','Home Owner'),(8,'mgmtuser1','Platform Management'),(11,'deaddd','Admin User'),(13,'tim','Admin User');
 /*!40000 ALTER TABLE `useradmin` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-12  4:29:45
+-- Dump completed on 2025-05-13  1:19:29
