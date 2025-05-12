@@ -107,8 +107,8 @@
                 <select name="service_filter">
                     <option value="">All Services</option>
                     {% for service in services %}
-                    <option value="{{ service.service_id }}" 
-                            {% if selected_service == service.service_id|string %}selected{% endif %}>
+                    <option value="{{ service.serviceid }}" 
+                            {% if selected_service == service.serviceid|string %}selected{% endif %}>
                         {{ service.name }}
                     </option>
                     {% endfor %}
@@ -124,9 +124,6 @@
                     <div class="cleaner-name">{{ cleaner.cleaner_name }}</div>
                     <div class="service-info">
                         Service: {{ cleaner.service_name }}
-                    </div>
-                    <div class="service-info">
-                        Experience: {{ cleaner.experience }} years
                     </div>
                     <div class="price">
                         Price: {{ cleaner.formatted_price }} ({{ cleaner.duration }} hours)

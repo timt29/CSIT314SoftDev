@@ -8,7 +8,7 @@ def get_all_cleaners_with_services() -> List[Dict]:
             host="localhost",
             user="root",
             password="password",
-            database="csit314",
+            database="testingcsit314",
             port=3306,
             auth_plugin='mysql_native_password'
         )
@@ -18,14 +18,13 @@ def get_all_cleaners_with_services() -> List[Dict]:
         SELECT 
             c.userid,
             c.name as cleaner_name,
-            c.experience,
             s.name as service_name,
-            s.pricing,
+            s.price,
             s.duration,
-            CONCAT('$', s.pricing) as formatted_price
+            CONCAT('$', s.price) as formatted_price
         FROM cleaner c
-        LEFT JOIN cleaner_services cs ON c.userid = cs.cleaner_id
-        LEFT JOIN service s ON cs.service_id = s.service_id
+        LEFT JOIN cleanerservice cs ON c.UserId = cs.UserId
+        LEFT JOIN service s ON cs.serviceid = s.serviceid
         ORDER BY c.name ASC
         """
         cursor.execute(query)
@@ -46,7 +45,7 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
             host="localhost",
             user="root",
             password="password",
-            database="csit314",
+            database="testingcsit314",
             port=3306,
             auth_plugin='mysql_native_password'
         )
@@ -57,11 +56,11 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
         c.userid, 
         c.name AS cleaner_name,
         s.name AS service_name,
-        s.pricing,
+        s.price,
         s.duration
         FROM cleaner c
-        JOIN cleaner_services cs ON c.userid = cs.cleaner_id
-        JOIN service s ON cs.service_id = s.service_id
+        JOIN cleanerservice cs ON c.UserId = cs.UserId
+        JOIN service s ON cs.serviceid = s.serviceid
         WHERE 1=1
         """
         params = []
@@ -71,7 +70,7 @@ def search_cleaners(name_query: str = None, service_id: int = None) -> List[Dict
             params.append(f"%{name_query}%")
             
         if service_id:
-            query += " AND s.service_id = %s"
+            query += " AND s.serviceid = %s"
             params.append(service_id)
             
         query += " ORDER BY c.name ASC"
@@ -93,7 +92,7 @@ def get_all_services() -> List[Dict]:
             host="localhost",
             user="root",
             password="password",
-            database="csit314",
+            database="testingcsit314",
             port=3306,
             auth_plugin='mysql_native_password'
         )

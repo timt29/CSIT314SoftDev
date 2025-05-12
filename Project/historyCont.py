@@ -7,7 +7,7 @@ def get_service_history(service_id=None, date_used=None):
             host="localhost",
             user="root",
             password="password",
-            database="csit314",
+            database="testingcsit314",
             port=3306,
             auth_plugin='mysql_native_password'
         )

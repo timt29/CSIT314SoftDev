@@ -9,7 +9,7 @@ def get_favourite_cleaners():
             host="localhost",
             user="root",
             password="password",  # Replace with your actual password
-            database="csit314",
+            database="testingcsit314",
             port=3306,
             auth_plugin='mysql_native_password'
         )
@@ -26,13 +26,13 @@ def get_favourite_cleaners():
                 s.name AS service_name,
                 c.experience
             FROM
-                csit314.favourite f
+                testingcsit314.favourite f
             JOIN
-                csit314.cleaner c ON f.cleaner_id = c.userid
+                testingcsit314.cleaner c ON f.cleaner_id = c.userid
             JOIN
-                csit314.cleaner_services cs ON c.userid = cs.cleaner_id
+                testingcsit314.cleaner_services cs ON c.userid = cs.cleaner_id
             JOIN
-                csit314.service s ON cs.service_id = s.service_id
+                testingcsit314.service s ON cs.service_id = s.service_id
             WHERE
                 f.homeowner_id = %s
         """
