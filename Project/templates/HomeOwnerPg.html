@@ -135,8 +135,8 @@
                     <div class="price">
                         Price: {{ cleaner.formatted_price }} ({{ cleaner.duration }} hours)
                     </div>
-                    <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}">
-                        <button type="button">Information</button>
+                    <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}" >
+                        <button onclick="viewCleaner({{ cleaner.userid }})">Information</button>
                     </a>
                     <button>Book Now</button>
                 </div>
@@ -149,5 +149,21 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+    function viewCleaner(cleanerId) {
+        fetch(`/api/services/${cleanerId}/view`, {
+            method: 'POST'
+        })
+        .then(() => {
+            window.location.href = `/cleanerinfo?cleaner_id=${cleanerId}`;
+        })
+        .catch(error => {
+            console.error('Failed to track view:', error);
+            // Still go to page even if tracking fails
+            window.location.href = `/cleanerinfo?cleaner_id=${cleanerId}`;
+        });
+    }
+    </script>
 </body>
 </html>

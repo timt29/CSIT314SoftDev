@@ -168,48 +168,13 @@ class CleanerController:
                 cursor.close()
                 conn.close()
 
-        @self.app.route('/api/services/<int:service_id>/view', methods=['POST'])
-        def increment_view(service_id):
-            user = session.get("user")
-            if not user:
-                return jsonify({"error": "Not logged in"}), 401
-
-            conn = self.get_db_connection()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("UPDATE service SET views_count = views_count + 1 WHERE serviceid = %s", (service_id,))
+        @self.app.route('/api/services/<int:user_id>/view', methods=['POST'])
+            def increment_view(userid):
+                conn = get_db_connection()
+                conn.execute(
+                    "UPDATE cleanerservice SET view_count = view_count + 1 WHERE userid = ?",
+                    (userid,)
+                )
                 conn.commit()
-                return jsonify({'message': 'View recorded'}), 200
-            except Exception as e:
-                conn.rollback()
-                return jsonify({'error': str(e)}), 500
-            
-        @self.app.route('/api/services/<int:service_id>/shortlist', methods=['POST'])
-        def increment_shortlist(service_id):
-            user = session.get("user")
-            if not user:
-                return jsonify({"error": "Not logged in"}), 401
-
-            conn = self.get_db_connection()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("UPDATE service SET shortlisted_count = shortlisted_count + 1 WHERE serviceid = %s", (service_id,))
-                conn.commit()
-                return jsonify({'message': 'Shortlist recorded'}), 200
-            except Exception as e:
-                conn.rollback()
-                return jsonify({'error': str(e)}), 500
-            
-        @self.app.route("/api/services/<int:service_id>/view", methods=["POST"])
-        def track_service_view(service_id):
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
-            # Make sure column is named correctly in your DB: view_count
-            cursor.execute("UPDATE cleanerservice SET view_count = COALESCE(view_count, 0) + 1 WHERE serviceid = %s", (service_id,))
-            conn.commit()
-
-            cursor.close()
-            conn.close()
-
-            return jsonify({"message": "View tracked successfully"})
+                conn.close()
+                return jsonify({"message": "View count incremented"})
