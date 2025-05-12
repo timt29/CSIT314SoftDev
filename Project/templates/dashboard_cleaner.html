@@ -338,13 +338,12 @@
     function trackView(serviceId) {
         fetch(`/api/services/${serviceId}/view`, {
             method: 'POST'
-        }).catch(error => console.error('View tracking failed:', error));
-    }
-
-    function trackShortlist(serviceId) {
-        fetch(`/api/services/${serviceId}/shortlist`, {
-            method: 'POST'
-        }).catch(error => console.error('Shortlist tracking failed:', error));
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("View tracked successfully:", data);
+        })
+        .catch(error => console.error('View tracking failed:', error));
     }
     </script>
 </body>

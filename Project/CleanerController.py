@@ -32,7 +32,8 @@ class CleanerController:
             cleaner = cursor.fetchone()
 
             cursor.execute("""
-                SELECT s.serviceid, s.name, s.price, s.duration, s.views_count, s.shortlisted_count
+                SELECT s.serviceid, s.name, s.price, s.duration,
+                    cs.view_count, cs.shortlist_count
                 FROM service s
                 JOIN cleanerservice cs ON s.serviceid = cs.serviceid
                 WHERE cs.userid = %s
@@ -198,3 +199,17 @@ class CleanerController:
             except Exception as e:
                 conn.rollback()
                 return jsonify({'error': str(e)}), 500
+            
+        @self.app.route("/api/services/<int:service_id>/view", methods=["POST"])
+        def track_service_view(service_id):
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Make sure column is named correctly in your DB: view_count
+            cursor.execute("UPDATE cleanerservice SET view_count = COALESCE(view_count, 0) + 1 WHERE serviceid = %s", (service_id,))
+            conn.commit()
+
+            cursor.close()
+            conn.close()
+
+            return jsonify({"message": "View tracked successfully"})
