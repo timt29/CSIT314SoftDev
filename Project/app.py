@@ -62,23 +62,23 @@ def cleaner_info():
 
 @app.route("/cleanerinfo")
 def cleaner_info():
-    # Hardcoding the user_id as 6
-    user_id = 6  # Directly set to 6 to simulate login
+    cleaner_id = request.args.get("cleaner_id", type=int)
+
+    if not cleaner_id:
+        return "Cleaner ID not provided", 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Query for cleaner info based on hardcoded user_id (6)
-    cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
+    cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (cleaner_id,))
     cleaner = cursor.fetchone()
 
-    # Query for services provided by this cleaner
     cursor.execute("""
         SELECT s.serviceid, s.name, s.price, s.duration
         FROM service s
         JOIN cleanerservice cs ON s.serviceid = cs.serviceid
         WHERE cs.userid = %s
-    """, (user_id,))
+    """, (cleaner_id,))
     services = cursor.fetchall()
 
     cursor.close()
@@ -88,6 +88,7 @@ def cleaner_info():
         return "Cleaner not found", 404
 
     return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services)
+
 
 @app.route("/home")
 def home():
