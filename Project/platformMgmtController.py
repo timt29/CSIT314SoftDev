@@ -10,7 +10,9 @@ def get_db_connection():
         database="testingcsit314"
     )
 
-@app.route('/dashboard')
-def dashboard():
-    username = "JohnDoe"  # Replace with the actual logged-in username
-    return render_template('dashboard_platform.html', username=username)
+class pltfMgmtController:
+    def __init__(self, app, db_connector):
+        self.app = app
+        self.get_db_connection = db_connector
+        self.register_routes()
+
