@@ -70,7 +70,7 @@ def cleaner_info():
     if not cleaner:
         return "Cleaner not found", 404
 
-    return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services)
+    return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services, cleaner_id=cleaner_id)
 
 
 @app.route("/home")

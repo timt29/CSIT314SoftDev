@@ -107,7 +107,7 @@
                     <td>{{ service.price }}</td>
                     <td>{{ service.duration }}</td>
                     <td>
-                        <button class="dashboard-button" onclick="handleBooking({{ service.serviceid }})">Book Now</button>
+                        <button class="dashboard-button" onclick="bookService({{ cleaner_id }}, {{ service.serviceid }})">Book Now</button>
                     </td>
                 </tr>
                 {% else %}
@@ -119,39 +119,37 @@
         </table>
     </div>
 
-    <script>
-        function handleBooking(serviceId) {
-            fetch('/book_service', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include CSRF token if required by your framework:
-                    // 'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ service_id: serviceId })
-            })
-            .then(response => {
-                if (response.ok) {
-                    showSuccessMessage("Service has been booked successfully!");
-                } else {
-                    alert("Booking failed. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error('Booking error:', error);
-                alert("An error occurred. Please try again later.");
-            });
-        }
+        <script>
+            // Function to handle the booking
+            function bookService(cleanerId, serviceId) {
+                const url = '/api/book'; // API endpoint for booking
+                const data = {
+                    cleaner_id: cleanerId,
+                    service_id: serviceId
+                };
 
-        function showSuccessMessage(message) {
-            const msgBox = document.getElementById('successMessage');
-            msgBox.textContent = message;
-            msgBox.style.display = 'block';
-            setTimeout(() => {
-                msgBox.style.display = 'none';
-            }, 3000);
-        }
-    </script>
+                // Make the POST request using Fetch API
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);  // Show success message
+                    } else if (data.error) {
+                        alert(data.error);  // Show error message
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Booking failed, please try again.');
+                });
+            }
+        </script>
 </body>
 </html>
 
