@@ -35,25 +35,29 @@ def platform_dashboard():
 @app.route("/cleanerinfo")
 def cleaner_info():
     cleaner_id = request.args.get("cleaner_id", type=int)
+    service_id = request.args.get("service_id", type=int)
 
-    if not cleaner_id:
-        return "Cleaner ID not provided", 400
+    if not cleaner_id or not service_id:
+        return "Cleaner ID and Service ID required", 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # ✅ Increment view count only for the specific service
     cursor.execute("""
         UPDATE cleanerservice 
         SET view_count = view_count + 1 
-        WHERE userid = %s
-    """, (cleaner_id,))
-    conn.commit() 
+        WHERE userid = %s AND serviceid = %s
+    """, (cleaner_id, service_id))
+    conn.commit()
 
+    # ✅ Get cleaner name
     cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (cleaner_id,))
     cleaner = cursor.fetchone()
 
+    # ✅ Get all services by the cleaner
     cursor.execute("""
-        SELECT s.serviceid, s.name, s.price, s.duration
+        SELECT s.serviceid, s.name, s.price, s.duration, cs.view_count
         FROM service s
         JOIN cleanerservice cs ON s.serviceid = cs.serviceid
         WHERE cs.userid = %s

@@ -18,6 +18,7 @@ def get_all_cleaners_with_services() -> List[Dict]:
         SELECT 
             c.userid,
             c.name as cleaner_name,
+            s.serviceid,
             s.name as service_name,
             s.price,
             s.duration,

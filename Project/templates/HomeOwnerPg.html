@@ -135,8 +135,8 @@
                     <div class="price">
                         Price: {{ cleaner.formatted_price }} ({{ cleaner.duration }} hours)
                     </div>
-                    <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}" >
-                        <button onclick="viewCleaner({{ cleaner.userid }})">Information</button>
+                    <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}&service_id={{ cleaner.serviceid }}">
+                        <button>Information</button>
                     </a>
                     <button>Book Now</button>
                 </div>
