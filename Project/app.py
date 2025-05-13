@@ -7,6 +7,7 @@ from historyCont import get_service_history
 from UserProfileController import UserProfileController
 from UserAdminController import AdminController, login_controller
 from CleanerController import CleanerController
+from platformMgmtController import pltfMgmtController
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
