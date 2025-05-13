@@ -202,38 +202,39 @@ def fetch_all_services():
 
     return jsonify(services)
 
-@app.route("/book_service", methods=["POST"])
-def book_service():
-    # Get the service_id from the POST data
-    data = request.get_json()  # Expecting JSON body in the request
-    
-    service_id = data.get('service_id')
-    homeowner_id = session.get('homeowner_id')  # Assuming homeowner ID is stored in the session
-    cleaner_id = data.get('cleaner_id')  # The cleaner that the homeowner is booking
-    
-    if not service_id or not homeowner_id or not cleaner_id:
-        return jsonify({"message": "Missing required information!"}), 400
+@app.route("/api/book", methods=["POST"])
+def api_book_service():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
 
-    # Connect to the database
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
+    home_owner_id = user.get("UserId")
+    cleaner_id = request.json.get("cleaner_id")
+    service_id = request.json.get("service_id")
+    
+    if not all([cleaner_id, service_id]):
+        return jsonify({"error": "Missing fields"}), 400
+    
     try:
-        # Insert booking into the database
-        query = """
-            INSERT INTO bookings (homeowner_id, service_id, cleaner_id, booking_date)
-            VALUES (%s, %s, %s, NOW())
-        """
-        cursor.execute(query, (homeowner_id, service_id, cleaner_id))
-        conn.commit()  # Commit the transaction
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-        # Optionally, you can fetch the booking ID or any other info you need
-        # booking_id = cursor.lastrowid
+        # Insert new booking into the booking table
+        cursor.execute("""
+            INSERT INTO booking (HomeOwnerId, CleanerId, ServiceId) 
+            VALUES (%s, %s, %s)
+        """, (home_owner_id, cleaner_id, service_id))
+        conn.commit()
 
-        return jsonify({"message": "Service has been booked successfully!"}), 200
-    except Exception as e:
-        conn.rollback()  # If there was an error, rollback the transaction
-        return jsonify({"message": f"Error booking service: {str(e)}"}), 500
+        # Check if the booking was successful
+        if cursor.rowcount > 0:
+            return jsonify({"message": "Booking successful!"}), 200
+        else:
+            return jsonify({"error": "Failed to book service"}), 500
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+
     finally:
         cursor.close()
         conn.close()

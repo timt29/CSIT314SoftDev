@@ -138,7 +138,7 @@
                     <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}&service_id={{ cleaner.serviceid }}">
                         <button>Information</button>
                     </a>
-                    <button>Book Now</button>
+                    <button class="book-now" onclick="bookService({{ cleaner.userid }}, {{ cleaner.serviceid }})" style="margin-top: 10px;">Book Now</button>
                 </div>
                 {% endfor %}
             {% else %}
@@ -149,5 +149,37 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+        // Function to handle the booking
+        function bookService(cleanerId, serviceId) {
+            const url = '/api/book'; // API endpoint for booking
+            const data = {
+                cleaner_id: cleanerId,
+                service_id: serviceId
+            };
+
+            // Make the POST request using Fetch API
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);  // Show success message
+                } else if (data.error) {
+                    alert(data.error);  // Show error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Booking failed, please try again.');
+            });
+        }
+    </script>
 </body>
 </html>
