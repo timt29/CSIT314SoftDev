@@ -32,35 +32,6 @@ def platform_dashboard():
     return render_template("dashboard_platform.html")
 
 
-'''@app.route("/cleanerinfo")
-def cleaner_info():
-            user = session.get("user")
-            if not user:
-                return redirect('/')
-
-            user_id = user.get("UserId")
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-
-            cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
-            cleaner = cursor.fetchone()
-
-            cursor.execute("""
-                SELECT s.serviceid, s.name, s.price, s.duration
-                FROM service s
-                JOIN cleanerservice cs ON s.serviceid = cs.serviceid
-                WHERE cs.userid = %s
-            """, (user_id,))
-            services = cursor.fetchall()
-
-            cursor.close()
-            conn.close()
-
-            if not cleaner:
-                return "Cleaner not found", 404
-
-            return render_template("cleanerinfo.html", cleaner_name=cleaner["name"], services=services)'''
-
 @app.route("/cleanerinfo")
 def cleaner_info():
     cleaner_id = request.args.get("cleaner_id", type=int)
@@ -70,6 +41,13 @@ def cleaner_info():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        UPDATE cleanerservice 
+        SET view_count = view_count + 1 
+        WHERE userid = %s
+    """, (cleaner_id,))
+    conn.commit() 
 
     cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (cleaner_id,))
     cleaner = cursor.fetchone()

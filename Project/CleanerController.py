@@ -167,14 +167,3 @@ class CleanerController:
             finally:
                 cursor.close()
                 conn.close()
-
-        @self.app.route('/api/services/<int:user_id>/view', methods=['POST'])
-            def increment_view(userid):
-                conn = get_db_connection()
-                conn.execute(
-                    "UPDATE cleanerservice SET view_count = view_count + 1 WHERE userid = ?",
-                    (userid,)
-                )
-                conn.commit()
-                conn.close()
-                return jsonify({"message": "View count incremented"})
