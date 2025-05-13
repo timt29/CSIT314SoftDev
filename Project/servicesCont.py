@@ -2,7 +2,6 @@ from flask import request, render_template, session, jsonify, redirect
 import mysql.connector
 from typing import List, Dict
 
-# Utility function for database connection (reuse this or import if centralised)
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",

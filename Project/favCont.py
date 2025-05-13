@@ -1,7 +1,43 @@
-# favController.py
-
+from flask import request, render_template, session, jsonify, redirect
 import mysql.connector
-from flask import session
+
+# Utility function for database connection (reuse this or import if centralised)
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="testingcsit314"
+    )
+
+class FavouriteController:
+    def __init__(self, app, db_connector):
+        self.app = app
+        self.get_db_connection = db_connector
+        self.register_routes()
+
+    def register_routes(self):
+        @self.app.route('/fav')
+        def favourites_page():
+            user = session.get("user")
+            if not user:
+                return redirect('/')
+
+            user_id = user.get("UserId")
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+            homeowner = cursor.fetchone()
+
+            if not homeowner:
+                return "homeowner not found", 404
+            cleaners = get_favourite_cleaners(user_id)
+            return render_template(
+                'HOfav.html',
+                favourites=cleaners,
+                homeowner_name=homeowner["name"])
+
 
 def get_favourite_cleaners(homeowner_id :int):
     try:
