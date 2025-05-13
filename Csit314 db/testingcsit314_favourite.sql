@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `favourite`;
 CREATE TABLE `favourite` (
   `HomeOwnerId` int NOT NULL,
   `CleanerId` int NOT NULL,
-  PRIMARY KEY (`HomeOwnerId`),
+  PRIMARY KEY (`HomeOwnerId`,`CleanerId`),
   KEY `favourite_ibfk_2_idx` (`CleanerId`),
   CONSTRAINT `favourite_ibfk_1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE,
   CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13  4:56:11
+-- Dump completed on 2025-05-13 21:15:08
