@@ -29,6 +29,7 @@ CleanerController(app, get_db_connection)
 ServiceController(app, get_db_connection)
 FavouriteController(app, get_db_connection)
 HistoryController(app, get_db_connection)
+pltfMgmtController(app, get_db_connection)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():

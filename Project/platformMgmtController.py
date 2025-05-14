@@ -33,7 +33,7 @@ class pltfMgmtController:
             report = cursor.fetchall()
             cursor.close()
             conn.close()
-            return render_template('/templates/daily_report.html', report=report)
+            return render_template('daily_report.html', report=report)
 
         @self.app.route('/report/cleaner_service_usage')
         def cleaner_service_usage_report():

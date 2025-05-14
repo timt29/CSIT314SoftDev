@@ -1,3 +1,0 @@
-# CSIT314SoftDev
-
-testing
