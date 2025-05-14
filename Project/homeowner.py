@@ -10,7 +10,6 @@ def get_db_connection():
     )
 
 
-
 class HomeOwner:
     def __init__(self, db_connector):
         get_db_connection = db_connector
