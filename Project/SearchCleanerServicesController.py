@@ -1,6 +1,6 @@
 from flask import request
 
-class SearchServicesController:
+class SearchCleanerServicesController:
 
     def get_search_input():
         return {

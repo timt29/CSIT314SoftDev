@@ -5,8 +5,8 @@ from UserProfileController import UserProfileController
 from UserAdminController import login_controller
 from ViewUserController import ViewUserController
 from ViewUserBoundary import register_routes
-from ViewServicesBoundary import register_routes2  #tim
-from ViewHistoryBoundary import register_routes3 #tim
+from CleanerServicesBoundary import register_routes2  #tim
+from HistoryBoundary import register_routes3 #tim
 from FavouriteBoundary import register_routes4 #tim
 from platformMgmtController import pltfMgmtController
 from User import User

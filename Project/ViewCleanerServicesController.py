@@ -1,6 +1,6 @@
 from homeowner import HomeOwner
 
-class ViewServicesController:
+class ViewCleanerServicesController:
 
 
     def get_all_services():

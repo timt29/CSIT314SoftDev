@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, session, jsonify
 from FavouriteController import FavouriteController
-from ViewServicesController import ViewServicesController
+from ViewCleanerServicesController import ViewCleanerServicesController
 from ViewShortlistController import ViewShortlistController
 
 def register_routes4(app):
@@ -12,7 +12,7 @@ def register_routes4(app):
             return redirect('/')
 
         user_id = user.get("UserId")
-        homeowner_name = ViewServicesController.get_homeowner_name(user_id)["name"]
+        homeowner_name = ViewCleanerServicesController.get_homeowner_name(user_id)["name"]
         if not homeowner_name:
             return "homeowner not found", 404
 

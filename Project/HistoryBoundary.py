@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, session, jsonify
 from ViewHistoryController import ServiceHistoryController
-from ViewServicesController import ViewServicesController
+from ViewCleanerServicesController import ViewCleanerServicesController
 
 
 def register_routes3(app):
@@ -12,13 +12,13 @@ def register_routes3(app):
             return redirect('/')
 
         user_id = user.get("UserId")
-        homeowner_name = ViewServicesController.get_homeowner_name(user_id)["name"]
+        homeowner_name = ViewCleanerServicesController.get_homeowner_name(user_id)["name"]
         if not homeowner_name:
             return "homeowner not found", 404
 
         filters = ServiceHistoryController.parse_history_filters(request)
         history = ServiceHistoryController.fetch_history(user_id, filters)
-        services = ViewServicesController.get_all_services()
+        services = ViewCleanerServicesController.get_all_services()
 
         return render_template(
             "history.html",

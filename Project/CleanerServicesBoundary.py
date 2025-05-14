@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, session
-from ViewServicesController import ViewServicesController
-from SearchServicesController import SearchServicesController
+from ViewCleanerServicesController import ViewCleanerServicesController
+from SearchCleanerServicesController import SearchCleanerServicesController
 from ViewCountController import ViewCountController
 
 def register_routes2(app):
@@ -12,12 +12,12 @@ def register_routes2(app):
             return redirect('/')
         
         user_id = user.get("UserId")
-        homeowner = ViewServicesController.get_homeowner_name(user_id)
+        homeowner = ViewCleanerServicesController.get_homeowner_name(user_id)
         if not homeowner:
             return "homeowner not found", 404
 
-        cleaners = ViewServicesController.get_all_cleaners_with_services()
-        services = ViewServicesController.get_all_services()
+        cleaners = ViewCleanerServicesController.get_all_cleaners_with_services()
+        services = ViewCleanerServicesController.get_all_services()
 
         return render_template("HomeOwnerPg.html", cleaners=cleaners, services=services,
                             search_query="", selected_service="", homeowner_name=homeowner["name"])
@@ -29,13 +29,13 @@ def register_routes2(app):
             return redirect('/')
 
         user_id = user.get("UserId")
-        homeowner = ViewServicesController.get_homeowner_name(user_id)
+        homeowner = ViewCleanerServicesController.get_homeowner_name(user_id)
         if not homeowner:
             return "homeowner not found", 404
 
-        data = SearchServicesController.get_search_input()
-        cleaners = ViewServicesController.get_cleaners(data["search_query"], int(data["service_filter"]) if data["service_filter"] else None)
-        services = ViewServicesController.get_all_services()
+        data = SearchCleanerServicesController.get_search_input()
+        cleaners = ViewCleanerServicesController.get_cleaners(data["search_query"], int(data["service_filter"]) if data["service_filter"] else None)
+        services = ViewCleanerServicesController.get_all_services()
 
         return render_template("HomeOwnerPg.html", cleaners=cleaners, services=services,
                             search_query=data["search_query"], selected_service=data["service_filter"],
