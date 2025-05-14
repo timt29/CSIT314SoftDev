@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Service History</title>
+  <title>Confirmed Bookings</title>
   <style>
     body { font-family: Arial; margin: 0; background-color: #f5f5f5; }
     header {
@@ -43,7 +43,7 @@
       color: white;
       border: none;
     }
-    .history-card {
+    .booking-card {
       border: 1px solid #ddd;
       padding: 15px;
       border-radius: 8px;
@@ -58,40 +58,43 @@
 </head>
 <body>
   <header>
-    <h1>Cleaner History</h1>
+    <h1>Cleaner History</h1> 
     <nav>
       <a href="/home">Home</a>
-      <a>History</a>
+      <a href="/booking">History</a> 
       <a href="/">Logout</a>
     </nav>
   </header>
-    <h2>Welcome, {{ cleaner_name }}</h2>
-    <h3>Your Confirmed Bookings </h3>
+
+  <h2>Welcome, {{ cleaner_name }}</h2>
+  <h3>Your Confirmed Bookings</h3>
+
   <div class="container">
-        <form method="GET">
-            <select name="service_filter">
-                <option value="">All Services</option>
-                {% for s in services %}
-                <option value="{{ s.serviceid }}" {% if selected_service == s.serviceid|string %}selected{% endif %}>
-                {{ s.name }}
+    <!-- Filter options for the user -->
+    <form method="GET">
+        <select name="service_filter">
+            <option value="">All Services</option>
+            {% for s in services %}
+                <option value="{{ s.ServiceId }}" {% if selected_service == s.ServiceId|string %}selected{% endif %}>
+                    {{ s.Name }}
                 </option>
-                {% endfor %}
-            </select>
-    <input type="date" name="date_used" value="{{ date_used }}">
-    <button type="submit">Filter</button>
+            {% endfor %}
+        </select>
+        <input type="date" name="date_used" value="{{ date_used }}">
+        <button type="submit">Filter</button>
     </form>
 
-    {% if history %}
-      {% for h in history %}
-      <div class="history-card">
-        <div><strong>Cleaner:</strong> {{ h.cleaner_name }}</div>
-        <div><strong>Service:</strong> {{ h.service_name }}</div>
-        <div><strong>Price:</strong> ${{ h.price }}</div>
-        <div><strong>Date Used:</strong> {{ h.date_used }}</div>
-      </div>
+    {% if bookings %}
+      {% for booking in bookings %} 
+        <div class="booking-card">
+          <div><strong>Cleaner:</strong> {{ booking.cleaner_name }}</div> 
+          <div><strong>Service:</strong> {{ booking.service_name }}</div> 
+          <div><strong>Price:</strong> ${{ booking.price }}</div> 
+          <div><strong>Date Used:</strong> {{ booking.Date_Used }}</div> 
+        </div>
       {% endfor %}
     {% else %}
-      <div class="no-results">No service history found for the selected filters.</div>
+      <div class="no-results">No confirmed bookings found for the selected filters.</div>
     {% endif %}
   </div>
 </body>

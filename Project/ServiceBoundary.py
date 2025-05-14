@@ -5,7 +5,7 @@ from UpdateServiceController import UpdateServiceController
 from DeleteServiceController import DeleteServiceController
 from SearchServiceController import SearchServiceController
 
-def register_routes(app):
+def register_routes5(app):
 
     @app.route("/dashboard_cleaner")
     def cleaner_dashboard():

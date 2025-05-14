@@ -10,7 +10,7 @@ from ViewHistoryBoundary import register_routes3 #tim
 from FavouriteBoundary import register_routes4 #tim
 from platformMgmtController import pltfMgmtController
 from User import User
-from ServiceBoundary import register_routes
+from ServiceBoundary import register_routes5
 from ViewServiceController import ViewServiceController
 from CreateServiceController import CreateServiceController
 from UpdateServiceController import UpdateServiceController
@@ -20,6 +20,10 @@ from Service import Service
 from ViewCountController import ViewCountController
 from ViewShortlistController import ViewShortlistController
 from Number import Number
+from BookingBoundary import register_routes6
+from ViewBookingController import ViewBookingController
+from SearchBookingController import SearchBookingController
+from Booking import Booking
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -39,10 +43,12 @@ UserProfileController(app, get_db_connection)
 login_controller(app)
 pltfMgmtController(app, get_db_connection)
 ViewUserController()
-register_routes4(app) #tim
-register_routes3(app) #tim
+register_routes(app) #tim
 register_routes2(app) #tim
-register_routes(app)
+register_routes3(app) #tim
+register_routes4(app)
+register_routes5(app)
+register_routes6(app)
 User(get_db_connection)
 ViewServiceController()
 CreateServiceController()
@@ -53,6 +59,9 @@ Service(get_db_connection)
 ViewCountController()
 ViewShortlistController()
 Number(get_db_connection)
+ViewBookingController()
+SearchBookingController()
+Booking(get_db_connection)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
