@@ -17,46 +17,6 @@ class CleanerController:
         self.register_routes()
 
     def register_routes(self):
-        # Add a new service
-        @self.app.route("/api/cleaner/services", methods=["POST"])
-        def add_service():
-            user = session.get("user")
-            if not user:
-                return jsonify({"error": "Not logged in"}), 401
-
-            data = request.json
-            name = data.get("name")
-            price = data.get("price")
-            duration = data.get("duration")
-
-            if not all([name, price, duration]):
-                return jsonify({"error": "Missing required fields"}), 400
-
-            conn = self.get_db_connection()
-            cursor = conn.cursor()
-            try:
-                # Insert into service table
-                cursor.execute("""
-                    INSERT INTO service (name, price, duration)
-                    VALUES (%s, %s, %s)
-                """, (name, price, duration))
-                service_id = cursor.lastrowid
-
-                # Link to cleaner
-                cursor.execute("""
-                    INSERT INTO cleanerservice (userid, serviceid)
-                    VALUES (%s, %s)
-                """, (user["UserId"], service_id))
-
-                conn.commit()
-                return jsonify({"message": "Service added", "serviceid": service_id}), 201
-
-            except mysql.connector.Error as err:
-                return jsonify({"error": f"Database error: {err}"}), 500
-            finally:
-                cursor.close()
-                conn.close()
-
         # Update a service
         @self.app.route("/api/cleaner/services/<int:service_id>", methods=["PUT"])
         def update_service(service_id):

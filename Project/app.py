@@ -13,6 +13,7 @@ from ViewUserBoundary import register_routes
 from User import User
 from ServiceBoundary import register_routes
 from ViewServiceController import ViewServiceController
+from CreateServiceController import CreateServiceController
 from Service import Service
 
 app = Flask(__name__)
@@ -40,6 +41,7 @@ ViewUserController()
 register_routes(app)
 User(get_db_connection)
 ViewServiceController()
+CreateServiceController()
 Service(get_db_connection)
 
 @app.route("/dashboard_platform")

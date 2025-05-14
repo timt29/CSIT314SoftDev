@@ -1,5 +1,6 @@
 from flask import request, render_template, redirect, url_for, session, jsonify
 from ViewServiceController import ViewServiceController
+from CreateServiceController import CreateServiceController
 
 def register_routes(app):
 
@@ -28,5 +29,26 @@ def register_routes(app):
         services = ViewServiceController.get_service(user_id)
         return jsonify(services)
     
+    @app.route("/api/cleaner/services", methods=["POST"])
+    def add_service():
+        user = session.get("user")
+        user_id = user.get("UserId") 
+        if not user:
+            return jsonify({"error": "Not logged in"}), 401
+
+        data = request.json
+        name = data.get("name")
+        price = data.get("price")
+        duration = data.get("duration")
+
+        if not all([name, price, duration]):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        response, status = CreateServiceController.add_service(
+            user_id, name, price, duration
+        )
+        return jsonify(response), status
+    
+
 
         

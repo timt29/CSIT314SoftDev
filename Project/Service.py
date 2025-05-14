@@ -30,3 +30,29 @@ class Service:
         conn.close()
 
         return services
+    
+    def add_service(user_id, name, price, duration):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Insert into service table
+            cursor.execute("""
+                INSERT INTO service (name, price, duration)
+                VALUES (%s, %s, %s)
+            """, (name, price, duration))
+            service_id = cursor.lastrowid
+
+            # Link to cleaner
+            cursor.execute("""
+                INSERT INTO cleanerservice (userid, serviceid)
+                VALUES (%s, %s)
+            """, (user_id, service_id))
+
+            conn.commit()
+            return ({"message": "Service added", "serviceid": service_id}), 201
+
+        except mysql.connector.Error as err:
+            return ({"error": f"Database error: {err}"}), 500
+        finally:
+            cursor.close()
+            conn.close()
