@@ -340,17 +340,6 @@
         }
     }
 
-    function trackView(serviceId) {
-        fetch(`/api/services/${serviceId}/view`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("View tracked successfully:", data);
-        })
-        .catch(error => console.error('View tracking failed:', error));
-    }
-
     function searchService() {
         const keyword = document.getElementById('searchInput').value.trim();
 

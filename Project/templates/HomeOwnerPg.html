@@ -138,7 +138,7 @@
                     <a href="/cleanerinfo?cleaner_id={{ cleaner.userid }}&service_id={{ cleaner.serviceid }}">
                         <button>Information</button>
                     </a>
-                    <button class="book-now" onclick="bookService({{ cleaner.userid }}, {{ cleaner.serviceid }})" style="margin-top: 10px;">Favourite</button>
+                    <button onclick="favouriteService({{ cleaner.userid }}, {{ cleaner.serviceid }})" style="margin-top: 10px;">Favourite</button>
                 </div>
                 {% endfor %}
             {% else %}
@@ -151,19 +151,17 @@
     </div>
 
     <script>
-        // Function to handle the booking
-        function bookService(cleanerId, serviceId) {
-            const url = '/api/book'; // API endpoint for booking
+        function favouriteService(cleanerId, serviceId) {
+            const url = '/api/favourite';  // API endpoint for favourite action
             const data = {
                 cleaner_id: cleanerId,
                 service_id: serviceId
             };
 
-            // Make the POST request using Fetch API
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',  // Ensure the correct content type is set
                 },
                 body: JSON.stringify(data)
             })
@@ -177,7 +175,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Booking failed, please try again.');
+                alert('Failed to shortlist service.');
             });
         }
     </script>

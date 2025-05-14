@@ -17,6 +17,9 @@ from UpdateServiceController import UpdateServiceController
 from DeleteServiceController import DeleteServiceController
 from SearchServiceController import SearchServiceController
 from Service import Service
+from ViewCountController import ViewCountController
+from ViewShortlistController import ViewShortlistController
+from Number import Number
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -47,6 +50,9 @@ UpdateServiceController()
 DeleteServiceController()
 SearchServiceController()
 Service(get_db_connection)
+ViewCountController()
+ViewShortlistController()
+Number(get_db_connection)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():

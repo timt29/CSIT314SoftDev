@@ -1,6 +1,7 @@
 from flask import request, render_template, redirect, session
 from ViewServicesController import ViewServicesController
 from SearchServicesController import SearchServicesController
+from ViewCountController import ViewCountController
 
 def register_routes2(app):
 
@@ -48,12 +49,15 @@ def register_routes2(app):
         
         if not cleaner_id or not service_id:
             return "Cleaner ID and Service ID required", 400
+        
+        ViewCountController.increaseViewCount(cleaner_id, service_id)
 
-        cleaner_name, services = HomeOwner.get_cleaner_info(cleaner_id, service_id)
+        cleaner_name, services = HomeOwner.get_cleaner_info(cleaner_id)
         if not cleaner_name:
             return "Cleaner not found", 404
 
         return render_template("cleanerinfo.html", cleaner_name=cleaner_name, services=services, cleaner_id=cleaner_id)
+
     
 
 

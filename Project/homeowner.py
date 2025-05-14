@@ -73,15 +73,9 @@ class HomeOwner:
         conn.close()
         return results
 
-    def get_cleaner_info(cleaner_id, service_id):
+    def get_cleaner_info(cleaner_id):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            UPDATE cleanerservice 
-            SET view_count = view_count + 1 
-            WHERE userid = %s AND serviceid = %s
-        """, (cleaner_id, service_id))
-        conn.commit()
 
         cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (cleaner_id,))
         cleaner = cursor.fetchone()

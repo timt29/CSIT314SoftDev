@@ -25,10 +25,13 @@ DROP TABLE IF EXISTS `favourite`;
 CREATE TABLE `favourite` (
   `HomeOwnerId` int NOT NULL,
   `CleanerId` int NOT NULL,
-  PRIMARY KEY (`HomeOwnerId`,`CleanerId`),
+  `ServiceId` int NOT NULL,
+  PRIMARY KEY (`HomeOwnerId`,`CleanerId`,`ServiceId`),
   KEY `favourite_ibfk_2_idx` (`CleanerId`),
+  KEY `favourite_ibfk_3_idx` (`ServiceId`),
   CONSTRAINT `favourite_ibfk_1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE,
-  CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT
+  CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `favourite_ibfk_3` FOREIGN KEY (`ServiceId`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -38,7 +41,7 @@ CREATE TABLE `favourite` (
 
 LOCK TABLES `favourite` WRITE;
 /*!40000 ALTER TABLE `favourite` DISABLE KEYS */;
-INSERT INTO `favourite` VALUES (2,6),(7,14);
+INSERT INTO `favourite` VALUES (2,6,1),(2,6,2),(2,6,3),(2,6,6),(2,6,10),(7,6,1),(2,14,1),(7,14,1);
 /*!40000 ALTER TABLE `favourite` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13 21:15:08
+-- Dump completed on 2025-05-15  3:26:49

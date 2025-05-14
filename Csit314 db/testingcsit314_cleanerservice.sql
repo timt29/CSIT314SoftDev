@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `cleanerservice`;
 CREATE TABLE `cleanerservice` (
   `UserId` int NOT NULL,
   `ServiceId` int NOT NULL,
-  `View_Count` int NOT NULL,
-  `Shortlist_Count` int NOT NULL,
+  `View_Count` int NOT NULL DEFAULT '0',
+  `Shortlist_Count` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`UserId`,`ServiceId`),
   KEY `ServiceId` (`ServiceId`),
   CONSTRAINT `cleanerservice_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -40,7 +40,7 @@ CREATE TABLE `cleanerservice` (
 
 LOCK TABLES `cleanerservice` WRITE;
 /*!40000 ALTER TABLE `cleanerservice` DISABLE KEYS */;
-INSERT INTO `cleanerservice` VALUES (6,1,8,0),(6,2,8,0),(6,3,8,0),(6,5,7,0),(6,6,7,0),(6,7,7,0),(6,10,7,0),(14,1,0,0);
+INSERT INTO `cleanerservice` VALUES (6,1,10,1),(6,2,30,0),(6,3,9,0),(6,5,7,0),(6,6,8,0),(6,7,9,0),(6,10,7,0),(6,17,6,0),(14,1,1,0);
 /*!40000 ALTER TABLE `cleanerservice` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13 21:15:08
+-- Dump completed on 2025-05-15  3:26:49

@@ -1,7 +1,7 @@
-from flask import request, render_template, redirect, session
+from flask import request, render_template, redirect, session, jsonify
 from FavouriteController import FavouriteController
 from ViewServicesController import ViewServicesController
-
+from ViewShortlistController import ViewShortlistController
 
 def register_routes4(app):
 
@@ -24,3 +24,26 @@ def register_routes4(app):
             homeowner_name=homeowner_name
         )
     
+    @app.route('/api/favourite', methods=['POST'])
+    def favourite_service():
+        user = session.get("user")
+        if not user:
+            return jsonify({"error": "Not logged in"}), 401
+
+        data = request.get_json()
+        cleaner_id = data.get('cleaner_id')
+        service_id = data.get('service_id')
+        homeowner_id = user.get("UserId")
+
+        # Basic check
+        if not (homeowner_id and cleaner_id and service_id):
+            return jsonify({'error': 'Missing required info'}), 400
+
+        success, error = ViewShortlistController.add_to_favourites(homeowner_id, cleaner_id, service_id)
+
+        if success:
+            ViewShortlistController.increaseShortlistCount(cleaner_id, service_id)
+            return jsonify({'message': 'Service added to shortlist!'}), 200
+        else:
+            return jsonify({'error': error or 'Something went wrong'}), 400
+        
