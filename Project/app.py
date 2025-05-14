@@ -5,12 +5,9 @@ from UserProfileController import UserProfileController
 from UserAdminController import login_controller
 from ViewUserController import ViewUserController
 from ViewUserBoundary import register_routes
-
-from ViewServicesBoundary import register_routes2
-from ViewHistoryBoundary import register_routes3
-from favCont import FavouriteController
-
-from CleanerController import CleanerController
+from ViewServicesBoundary import register_routes2  #tim
+from ViewHistoryBoundary import register_routes3 #tim
+from FavouriteBoundary import register_routes4 #tim
 from platformMgmtController import pltfMgmtController
 from User import User
 from ServiceBoundary import register_routes
@@ -37,8 +34,6 @@ def get_db_connection():
 #AdminController(app, get_db_connection)
 UserProfileController(app, get_db_connection)
 login_controller(app)
-CleanerController(app, get_db_connection)
-FavouriteController(app, get_db_connection)
 pltfMgmtController(app, get_db_connection)
 ViewUserController()
 register_routes4(app) #tim
