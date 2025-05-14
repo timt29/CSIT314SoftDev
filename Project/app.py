@@ -11,13 +11,15 @@ from ViewServicesBoundary import register_routes2
 #from homeowner import HomeOwner
 from favCont import FavouriteController
 from historyCont import HistoryController
-from CleanerController import CleanerController
 from platformMgmtController import pltfMgmtController
 
 from User import User
 from ServiceBoundary import register_routes
 from ViewServiceController import ViewServiceController
 from CreateServiceController import CreateServiceController
+from UpdateServiceController import UpdateServiceController
+from DeleteServiceController import DeleteServiceController
+from SearchServiceController import SearchServiceController
 from Service import Service
 
 app = Flask(__name__)
@@ -36,7 +38,6 @@ def get_db_connection():
 #AdminController(app, get_db_connection)
 UserProfileController(app, get_db_connection)
 login_controller(app)
-CleanerController(app, get_db_connection)
 FavouriteController(app, get_db_connection)
 HistoryController(app, get_db_connection)
 pltfMgmtController(app, get_db_connection)
@@ -47,6 +48,9 @@ register_routes(app)
 User(get_db_connection)
 ViewServiceController()
 CreateServiceController()
+UpdateServiceController()
+DeleteServiceController()
+SearchServiceController()
 Service(get_db_connection)
 
 @app.route("/dashboard_platform")
