@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, session, jsonify
+from flask import request, render_template, redirect, session
 from ViewServicesController import ViewServicesController
 from SearchServicesController import SearchServicesController
 
