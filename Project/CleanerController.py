@@ -17,58 +17,6 @@ class CleanerController:
         self.register_routes()
 
     def register_routes(self):
-        # Cleaner Dashboard Route
-        @self.app.route("/dashboard_cleaner")
-        def cleaner_dashboard():
-            user = session.get("user")
-            if not user:
-                return redirect('/')
-
-            user_id = user.get("UserId")
-            conn = self.get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-
-            cursor.execute("SELECT name FROM cleaner WHERE userid = %s", (user_id,))
-            cleaner = cursor.fetchone()
-
-            cursor.execute("""
-                SELECT s.serviceid, s.name, s.price, s.duration,
-                    cs.view_count, cs.shortlist_count
-                FROM service s
-                JOIN cleanerservice cs ON s.serviceid = cs.serviceid
-                WHERE cs.userid = %s
-            """, (user_id,))
-            services = cursor.fetchall()
-
-            cursor.close()
-            conn.close()
-
-            if not cleaner:
-                return "Cleaner not found", 404
-
-            return render_template("dashboard_cleaner.html", cleaner_name=cleaner["name"], services=services)
-
-        @self.app.route("/get_cleaner_services", methods=["GET"])
-        def get_cleaner_services():
-            user = session.get("user")
-            cleaner_id = user.get("UserId") if user else None
-            if not cleaner_id:
-                return jsonify({"error": "User not logged in"}), 401
-
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("""
-                SELECT s.serviceid, s.name, s.price, s.duration
-                FROM service s
-                JOIN cleanerservice cs ON s.serviceid = cs.serviceid
-                WHERE cs.userid = %s
-            """, (cleaner_id,))
-            cleaner_services = cursor.fetchall()
-            cursor.close()
-            conn.close()
-
-            return jsonify(cleaner_services)
-        
         # Add a new service
         @self.app.route("/api/cleaner/services", methods=["POST"])
         def add_service():

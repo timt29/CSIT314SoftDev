@@ -11,6 +11,9 @@ from platformMgmtController import pltfMgmtController
 from ViewUserController import ViewUserController
 from ViewUserBoundary import register_routes
 from User import User
+from ServiceBoundary import register_routes
+from ViewServiceController import ViewServiceController
+from Service import Service
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -36,6 +39,8 @@ pltfMgmtController(app, get_db_connection)
 ViewUserController()
 register_routes(app)
 User(get_db_connection)
+ViewServiceController()
+Service(get_db_connection)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
