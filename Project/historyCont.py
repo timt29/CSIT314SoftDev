@@ -32,7 +32,7 @@ class HistoryController:
 
             if not homeowner:
                 return "homeowner not found", 404
-            from servicesCont import get_all_services
+            from Project.backup.servicesCont import get_all_services
 
             service_id = request.args.get("service_filter", type=int)
             date_used = request.args.get("date_used")
