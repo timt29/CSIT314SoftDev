@@ -10,7 +10,6 @@ def register_routes5(app):
     @app.route("/dashboard_cleaner")
     def cleaner_dashboard():
         user = session.get("user")
-        print("Session Data:", user)
 
         if not user:
             return redirect(("/"))

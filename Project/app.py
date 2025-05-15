@@ -3,9 +3,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import mysql.connector
 #from UserProfileController import UserProfileController
 #from UserAdminController import login_controller
-from CleanerServicesBoundary import register_routes2  #tim
-from HistoryBoundary import register_routes3 #tim
-from FavouriteBoundary import register_routes4 #tim
+from CleanerServicesBoundary import register_routes2
+from HistoryBoundary import register_routes3
+from FavouriteBoundary import register_routes4 
 from platformMgmtController import pltfMgmtController
 from User import User
 from ServiceBoundary import register_routes5
@@ -46,10 +46,10 @@ def get_db_connection():
 #login_controller(app)
 pltfMgmtController(app, get_db_connection)
 #ViewUserController()
-#register_routes(app) #tim
-register_routes2(app) #tim
-register_routes3(app) #tim
-register_routes4(app)
+#register_routes(app)
+register_routes2(app)
+register_routes3(app)
+register_routes4(app) 
 register_routes5(app)
 register_routes6(app)
 ViewServiceController()
@@ -76,5 +76,5 @@ def platform_dashboard():
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000/")
-    app.run(debug=True)
+    app.run(debug=False)
 
