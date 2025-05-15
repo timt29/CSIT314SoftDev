@@ -18,12 +18,11 @@ class Favourite:
         query = """
         SELECT
             c.name AS cleaner_name,
-            s.price,
-            s.name AS service_name
+            s.name AS service_name,
+            s.price AS price
         FROM favourite f
         JOIN cleaner c ON f.cleanerid = c.userid
-        JOIN cleanerservice cs ON c.userid = cs.userid
-        JOIN service s ON cs.serviceid = s.serviceid
+        JOIN service s ON f.serviceid = s.serviceid
         WHERE f.homeownerid = %s
         """
         cursor.execute(query, (homeowner_id,))

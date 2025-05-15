@@ -74,8 +74,8 @@ class Booking:
             cursor = conn.cursor(dictionary=True)
 
             cursor.execute("""
-                INSERT INTO booking (HomeOwnerId, CleanerId, ServiceId) 
-                VALUES (%s, %s, %s)
+                INSERT INTO booking (HomeOwnerId, CleanerId, ServiceId, Date_Used) 
+                VALUES (%s, %s, %s,CURDATE())
             """, (home_owner_id, cleaner_id, service_id))
             conn.commit()
 
