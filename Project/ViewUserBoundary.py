@@ -1,7 +1,7 @@
 from flask import request, render_template, redirect, url_for, session, jsonify
 from ViewUserController import ViewUserController
 
-def register_routes(app):
+def register_user_routes(app):
 
     @app.route("/dashboard_admin")
     def admin_dashboard():

@@ -1,10 +1,8 @@
 import webbrowser
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import mysql.connector
-from UserProfileController import UserProfileController
-from UserAdminController import login_controller
-from ViewUserController import ViewUserController
-from ViewUserBoundary import register_routes
+#from UserProfileController import UserProfileController
+#from UserAdminController import login_controller
 from CleanerServicesBoundary import register_routes2  #tim
 from HistoryBoundary import register_routes3 #tim
 from FavouriteBoundary import register_routes4 #tim
@@ -24,6 +22,21 @@ from BookingBoundary import register_routes6
 from ViewBookingController import ViewBookingController
 from SearchBookingController import SearchBookingController
 from Booking import Booking
+#User & UserProfile
+from ViewUserController import ViewUserController
+from ViewUserBoundary import register_user_routes
+from LoginBoundary import register_login_routes
+from CreateUserBoundary import register_create_user_routes
+from SearchBoundary import register_search_routes
+from UpdateUserBoundary import register_update_user_routes
+from ViewUserProfileBoundary import register_view_user_profile_routes
+from SuspendUserBoundary import register_routes as suspend_routes
+from ViewUserProfileController import ViewUserProfileController
+from CreateUserProfileBoundary import register_create_profile_routes
+from UpdateUserProfileBoundary import register_update_profile_routes
+from DeleteUserProfileBoundary import register_delete_user_profile_routes
+from SearchUserProfileBoundary import register_search_user_profile_routes
+from LogoutBoundary import register_routes as logout_routes
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -39,11 +52,11 @@ def get_db_connection():
 
 # Initialize Controllers
 #AdminController(app, get_db_connection)
-UserProfileController(app, get_db_connection)
-login_controller(app)
+#UserProfileController(app, get_db_connection)
+#login_controller(app)
 pltfMgmtController(app, get_db_connection)
-ViewUserController()
-register_routes(app) #tim
+#ViewUserController()
+#register_routes(app) #tim
 register_routes2(app) #tim
 register_routes3(app) #tim
 register_routes4(app)
@@ -62,6 +75,21 @@ Number(get_db_connection)
 ViewBookingController()
 SearchBookingController()
 Booking(get_db_connection)
+#User & UserProfile
+ViewUserController()
+ViewUserProfileController()
+register_user_routes(app)
+register_login_routes(app)
+register_create_user_routes(app)
+register_search_routes(app)
+register_update_user_routes(app)
+register_view_user_profile_routes(app)
+suspend_routes(app)
+register_create_profile_routes(app)
+register_update_profile_routes(app)
+register_delete_user_profile_routes(app)
+register_search_user_profile_routes(app)
+logout_routes(app)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
