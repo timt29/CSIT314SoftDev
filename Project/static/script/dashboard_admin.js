@@ -166,8 +166,8 @@ async function createUser(event) {
 
         if (response.ok) {
             alert("User created successfully!");
-            loadUserTable(); // Reload the user table
             document.getElementById("create-user-form").reset(); // Reset the form
+            showTab('view'); // Switch to the View Users tab
         } else {
             const error = await response.json();
             alert(`Failed to create user: ${error.message}`);
