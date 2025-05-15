@@ -23,20 +23,10 @@ from ViewBookingController import ViewBookingController
 from SearchBookingController import SearchBookingController
 from Booking import Booking
 #User & UserProfile
-from ViewUserController import ViewUserController
-from ViewUserBoundary import register_user_routes
 from LoginBoundary import register_login_routes
-from CreateUserBoundary import register_create_user_routes
-from SearchBoundary import register_search_routes
-from UpdateUserBoundary import register_update_user_routes
-from ViewUserProfileBoundary import register_view_user_profile_routes
-from SuspendUserBoundary import register_routes as suspend_routes
-from ViewUserProfileController import ViewUserProfileController
-from CreateUserProfileBoundary import register_create_profile_routes
-from UpdateUserProfileBoundary import register_update_profile_routes
-from DeleteUserProfileBoundary import register_delete_user_profile_routes
-from SearchUserProfileBoundary import register_search_user_profile_routes
 from LogoutBoundary import register_routes as logout_routes
+from UserBoundary import register_user_routes as user_routes
+from UserProfileBoundary import register_profile_routes as profile_routes
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with a secure key
@@ -62,7 +52,6 @@ register_routes3(app) #tim
 register_routes4(app)
 register_routes5(app)
 register_routes6(app)
-User(get_db_connection)
 ViewServiceController()
 CreateServiceController()
 UpdateServiceController()
@@ -76,20 +65,10 @@ ViewBookingController()
 SearchBookingController()
 Booking(get_db_connection)
 #User & UserProfile
-ViewUserController()
-ViewUserProfileController()
-register_user_routes(app)
+user_routes(app)
 register_login_routes(app)
-register_create_user_routes(app)
-register_search_routes(app)
-register_update_user_routes(app)
-register_view_user_profile_routes(app)
-suspend_routes(app)
-register_create_profile_routes(app)
-register_update_profile_routes(app)
-register_delete_user_profile_routes(app)
-register_search_user_profile_routes(app)
 logout_routes(app)
+profile_routes(app)
 
 @app.route("/dashboard_platform")
 def platform_dashboard():
