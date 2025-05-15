@@ -318,6 +318,15 @@ function renderCreateProfileForm() {
 }
 
 async function showTab(tab) {
+    
+      const response = await fetch('/api/user_profiles');
+    const profiles = await response.json();
+
+    let roleOptions = '';
+    profiles.forEach(profile => {
+        roleOptions += `<option value="${profile.Role}">${profile.Role}</option>`;
+    });
+
     if (tab === "view") {
         document.getElementById('content').innerHTML = `
             <h3>Manage Users</h3>
@@ -352,10 +361,7 @@ async function showTab(tab) {
 
                 <label for="create-role">Role:</label>
                 <select id="create-role" required>
-                    <option value="Admin User">Admin User</option>
-                    <option value="Cleaner">Cleaner</option>
-                    <option value="Home Owner">Home Owner</option>
-                    <option value="Platform Management">Platform Management</option>
+                    ${roleOptions}
                 </select>
 
                 <label for="create-dob">Date of Birth:</label>
