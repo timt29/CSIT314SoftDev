@@ -58,15 +58,28 @@ class User:
 
     @staticmethod
     def create_user(email, name, password, role, dob, status="Active"):
-        # Insert a new user into the database
         conn = User.get_db_connection()
         try:
             cursor = conn.cursor()
+            # Insert into users table
             cursor.execute(""" 
                 INSERT INTO users (email, name, password, role, dob, status)
                 VALUES (%s, %s, %s, %s, %s, %s)
-                """, (email, name, password, role, dob, status))
+            """, (email, name, password, role, dob, status))
             conn.commit()
+            user_id = cursor.lastrowid  # Get the auto-incremented UserId
+
+            # Insert into the appropriate role table
+            if role == "Admin User":
+                cursor.execute("INSERT INTO useradmin (UserId, Name, Role) VALUES (%s, %s, %s)", (user_id, name, role))
+            elif role == "Cleaner":
+                cursor.execute("INSERT INTO cleaner (UserId, Name, Role) VALUES (%s, %s, %s)", (user_id, name, role))
+            elif role == "Home Owner":
+                cursor.execute("INSERT INTO homeowner (UserId, Name, Role) VALUES (%s, %s, %s)", (user_id, name, role))
+            elif role == "Platform Management":
+                cursor.execute("INSERT INTO platformmanagement (UserId, Name, Role) VALUES (%s, %s, %s)", (user_id, name, role))
+            conn.commit()
+
             return True, "User created successfully."
         except mysql.connector.Error as err:
             print(f"Error: {err}")
