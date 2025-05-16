@@ -46,17 +46,11 @@ class Report:
     c.UserId AS CleanerId,
     u.Name AS CleanerName,
     COUNT(DISTINCT cs.ServiceId) AS ServicesOffered
-FROM 
-    cleanerservice cs
-JOIN 
-    cleaner c ON cs.UserId = c.UserId
-JOIN 
-    users u ON c.UserId = u.UserId
-GROUP BY 
-    c.UserId, u.Name
-ORDER BY 
-    c.UserId;
-
+    FROM cleanerservice cs
+    JOIN cleaner c ON cs.UserId = c.UserId
+    JOIN users u ON c.UserId = u.UserId
+    GROUP BY c.UserId, u.Name
+    ORDER BY c.UserId;
         """)
         report = cursor.fetchall()
         cursor.close()
