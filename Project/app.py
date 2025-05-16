@@ -6,7 +6,6 @@ import mysql.connector
 from CleanerServicesBoundary import register_routes2
 from HistoryBoundary import register_routes3
 from FavouriteBoundary import register_routes4 
-from platformMgmtController import pltfMgmtController
 from User import User
 from ServiceBoundary import register_routes5
 from ViewServiceController import ViewServiceController
@@ -22,6 +21,8 @@ from BookingBoundary import register_routes6
 from ViewBookingController import ViewBookingController
 from SearchBookingController import SearchBookingController
 from Booking import Booking
+from PlatformManagementController import PlatformManagementController
+from PlatformManagementBoundary import register_routes7
 #User & UserProfile
 from LoginBoundary import register_login_routes
 from LogoutBoundary import register_routes as logout_routes
@@ -44,7 +45,7 @@ def get_db_connection():
 #AdminController(app, get_db_connection)
 #UserProfileController(app, get_db_connection)
 #login_controller(app)
-pltfMgmtController(app, get_db_connection)
+#pltfMgmtController(app, get_db_connection)
 #ViewUserController()
 #register_routes(app)
 register_routes2(app)
@@ -52,6 +53,7 @@ register_routes3(app)
 register_routes4(app) 
 register_routes5(app)
 register_routes6(app)
+register_routes7(app)
 ViewServiceController()
 CreateServiceController()
 UpdateServiceController()
@@ -64,6 +66,7 @@ Number(get_db_connection)
 ViewBookingController()
 SearchBookingController()
 Booking(get_db_connection)
+PlatformManagementController()
 #User & UserProfile
 user_routes(app)
 register_login_routes(app)
