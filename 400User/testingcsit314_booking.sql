@@ -16,27 +16,36 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userprofile`
+-- Table structure for table `booking`
 --
 
-DROP TABLE IF EXISTS `userprofile`;
+DROP TABLE IF EXISTS `booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userprofile` (
-  `Role` varchar(50) NOT NULL,
-  `Description` text,
-  PRIMARY KEY (`Role`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `booking` (
+  `BookingId` int NOT NULL AUTO_INCREMENT,
+  `HomeOwnerId` int NOT NULL,
+  `CleanerId` int NOT NULL,
+  `ServiceId` int NOT NULL,
+  `Date_Used` date DEFAULT NULL,
+  PRIMARY KEY (`BookingId`),
+  KEY `fkey1_idx` (`HomeOwnerId`),
+  KEY `fkey2_idx` (`CleanerId`),
+  KEY `fkey3_idx` (`ServiceId`),
+  CONSTRAINT `fkey1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fkey2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fkey3` FOREIGN KEY (`ServiceId`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userprofile`
+-- Dumping data for table `booking`
 --
 
-LOCK TABLES `userprofile` WRITE;
-/*!40000 ALTER TABLE `userprofile` DISABLE KEYS */;
-INSERT INTO `userprofile` VALUES ('Admin',NULL),('Admin User','Manages platform users, configurations, and policies!!!!'),('Cleaner','Responsible for cleaning tasks in various homes!!'),('Helper','Help the Home Owner somehow!!!!!11'),('Home Owner','Owner of property using the service to hire cleaners.'),('Platform Management','Oversees the platform technical and operational aspects.');
-/*!40000 ALTER TABLE `userprofile` ENABLE KEYS */;
+LOCK TABLES `booking` WRITE;
+/*!40000 ALTER TABLE `booking` DISABLE KEYS */;
+INSERT INTO `booking` VALUES (1,301,201,1,'2023-10-20'),(41,302,202,2,'2023-10-21'),(42,303,202,2,'2023-10-22'),(43,304,204,4,'2023-10-23'),(44,305,205,5,'2023-10-21'),(45,306,206,6,'2023-10-20'),(46,307,207,7,'2023-10-22'),(47,308,208,9,'2023-10-25'),(48,309,209,1,'2023-10-26'),(49,310,210,2,'2023-10-27');
+/*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

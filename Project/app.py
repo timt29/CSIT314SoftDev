@@ -65,7 +65,7 @@ ViewBookingController()
 SearchBookingController()
 Booking(get_db_connection)
 PlatformManagementController()
-#Report(app,get_db_connection)
+Report(app,get_db_connection)
 #User & UserProfile
 user_routes(app)
 register_login_routes(app)

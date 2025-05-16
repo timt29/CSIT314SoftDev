@@ -16,27 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userprofile`
+-- Table structure for table `service`
 --
 
-DROP TABLE IF EXISTS `userprofile`;
+DROP TABLE IF EXISTS `service`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userprofile` (
-  `Role` varchar(50) NOT NULL,
-  `Description` text,
-  PRIMARY KEY (`Role`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `service` (
+  `ServiceId` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `Price` decimal(10,2) NOT NULL,
+  `Duration` int NOT NULL,
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ServiceId`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userprofile`
+-- Dumping data for table `service`
 --
 
-LOCK TABLES `userprofile` WRITE;
-/*!40000 ALTER TABLE `userprofile` DISABLE KEYS */;
-INSERT INTO `userprofile` VALUES ('Admin',NULL),('Admin User','Manages platform users, configurations, and policies!!!!'),('Cleaner','Responsible for cleaning tasks in various homes!!'),('Helper','Help the Home Owner somehow!!!!!11'),('Home Owner','Owner of property using the service to hire cleaners.'),('Platform Management','Oversees the platform technical and operational aspects.');
-/*!40000 ALTER TABLE `userprofile` ENABLE KEYS */;
+LOCK TABLES `service` WRITE;
+/*!40000 ALTER TABLE `service` DISABLE KEYS */;
+INSERT INTO `service` VALUES (1,'Basic Cleaning',50.00,5,'2025-05-10 10:13:42','2025-05-13 13:18:32'),(2,'Deep Cleaning',120.00,120,'2025-05-10 10:13:42','2025-05-10 10:13:42'),(3,'Move-out Cleaning',150.00,150,'2025-05-10 10:13:42','2025-05-10 10:13:42'),(4,'Dog Cleaning',20.00,2,'2025-05-11 10:24:55','2025-05-16 15:22:43'),(5,'Walking My Dog Tim',20.00,2,'2025-05-11 10:41:16','2025-05-16 15:22:51'),(6,'Walking My Dog Tim2',20.00,30,'2025-05-11 11:00:40','2025-05-16 15:22:51'),(7,'Testing',20.00,2,'2025-05-11 18:29:55','2025-05-16 15:22:51'),(8,'Vernon Gay',2.00,2,'2025-05-13 13:22:01','2025-05-16 15:22:51'),(9,'Tim is my Dog',19.00,2,'2025-05-16 14:39:10','2025-05-16 15:22:51');
+/*!40000 ALTER TABLE `service` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -48,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-16 23:36:12
+-- Dump completed on 2025-05-16 23:36:11
