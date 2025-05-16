@@ -43,9 +43,6 @@ def get_db_connection():
     )
 
 # Initialize Controllers
-#AdminController(app, get_db_connection)
-#UserProfileController(app, get_db_connection)
-#login_controller(app)
 #pltfMgmtController(app, get_db_connection)
 #ViewUserController()
 #register_routes(app)
