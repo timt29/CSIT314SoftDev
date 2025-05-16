@@ -25,7 +25,7 @@ class HomeOwner:
     def fetch_homeowner_by_id(user_id):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT name FROM homeowner WHERE userid = %s", (user_id,))
+        cursor.execute("SELECT name FROM users WHERE userid = %s", (user_id,))
         result = cursor.fetchone()
         cursor.close()
         conn.close()
