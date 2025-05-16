@@ -35,13 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDaily = document.getElementById('btn-daily');
     if (btnDaily) {
         btnDaily.addEventListener('click', () => {
-            loadReport('/api/report/cleaner_popularity', 'Cleaner Popularity Report');
+            loadReport('/api/report/cleaner_popularity', 'Daily Report');
+        });
+    }
+    const btnWeekly = document.getElementById('btn-weekly');
+    if (btnWeekly) {
+        btnWeekly.addEventListener('click', () => {
+            loadReport('/api/report/cleaner_service_usage', 'Weekly Report');
         });
     }
     const btnMonthly = document.getElementById('btn-monthly');
     if (btnMonthly) {
         btnMonthly.addEventListener('click', () => {
-            loadReport('/api/report/homeowner_engagement', 'Homeowner Engagement Report');
+            loadReport('/api/report/homeowner_engagement', 'Monthly Report');
         });
     }
 });
