@@ -14,20 +14,23 @@ class Report:
     def __init__(self, app, db_connector):
         self.app = app
         self.get_db_connection = db_connector
-        self.register_routes()
+       # self.register_routes()
     
     @staticmethod
     def get_cleaner_popularity_report():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
-            SELECT c.name AS cleaner_name, s.name AS service_name, COUNT(h.historyid) AS times_booked
-            FROM cleaner c
-            JOIN cleanerservice cs ON c.userid = cs.userid
-            JOIN service s ON cs.serviceid = s.serviceid
-            LEFT JOIN history h ON h.cleanerid = c.userid AND h.serviceid = s.serviceid
-            GROUP BY c.userid, s.serviceid
-            ORDER BY times_booked DESC
+           SELECT c.UserId AS CleanerId, u.Name AS CleanerName,
+           s.ServiceId, s.Name AS ServiceName, COUNT(b.BookingId) AS BookingCount
+           FROM cleanerservice cs 
+           JOIN cleaner c ON cs.UserId = c.UserId
+           JOIN users u ON c.UserId = u.UserId
+           JOIN service s ON cs.ServiceId = s.ServiceId
+           LEFT JOIN booking b ON cs.UserId = b.CleanerId AND cs.ServiceId = b.ServiceId
+           GROUP BY c.UserId, u.Name, s.ServiceId, s.Name
+           ORDER BY c.UserId, s.ServiceId;
+
         """)
         report = cursor.fetchall()
         cursor.close()
@@ -39,11 +42,21 @@ class Report:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
-            SELECT c.name AS cleaner_name, COUNT(cs.serviceid) AS num_services
-            FROM cleaner c
-            LEFT JOIN cleanerservice cs ON c.userid = cs.userid
-            GROUP BY c.userid
-            ORDER BY num_services DESC
+           SELECT 
+    c.UserId AS CleanerId,
+    u.Name AS CleanerName,
+    COUNT(DISTINCT cs.ServiceId) AS ServicesOffered
+FROM 
+    cleanerservice cs
+JOIN 
+    cleaner c ON cs.UserId = c.UserId
+JOIN 
+    users u ON c.UserId = u.UserId
+GROUP BY 
+    c.UserId, u.Name
+ORDER BY 
+    c.UserId;
+
         """)
         report = cursor.fetchall()
         cursor.close()
@@ -55,14 +68,27 @@ class Report:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
-            SELECT h.name AS homeowner_name,
-                COUNT(DISTINCT f.cleanerid) AS num_favourites,
-                COUNT(DISTINCT hi.historyid) AS num_bookings
-            FROM homeowner h
-            LEFT JOIN favourite f ON h.userid = f.homeownerid
-            LEFT JOIN history hi ON h.userid = hi.homeownerid
-            GROUP BY h.userid
-            ORDER BY num_bookings DESC, num_favourites DESC
+          SELECT h.UserId AS HomeOwnerId, u.Name AS HomeOwnerName,
+          f.CleanerId, cu.Name AS CleanerName, s.ServiceId,
+          s.Name AS ServiceName,
+          COUNT(b.BookingId) AS BookingCount
+          FROM favourite f
+          JOIN 
+          homeowner h ON f.HomeOwnerId = h.UserId
+          JOIN 
+          users u ON h.UserId = u.UserId
+          JOIN 
+          cleaner c ON f.CleanerId = c.UserId
+          JOIN 
+          users cu ON c.UserId = cu.UserId
+          JOIN 
+          service s ON f.ServiceId = s.ServiceId
+          LEFT JOIN 
+          booking b ON f.HomeOwnerId = b.HomeOwnerId 
+          AND f.CleanerId = b.CleanerId 
+          AND f.ServiceId = b.ServiceId
+          GROUP BY h.UserId, u.Name, f.CleanerId, cu.Name, s.ServiceId, s.Name
+          ORDER BY h.UserId, f.CleanerId, s.ServiceId;
         """)
         report = cursor.fetchall()
         cursor.close()

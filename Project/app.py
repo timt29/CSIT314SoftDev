@@ -23,6 +23,7 @@ from SearchBookingController import SearchBookingController
 from Booking import Booking
 from PlatformManagementController import PlatformManagementController
 from PlatformManagementBoundary import register_routes7
+from Report import Report
 #User & UserProfile
 from LoginBoundary import register_login_routes
 from LogoutBoundary import register_routes as logout_routes
@@ -67,15 +68,12 @@ ViewBookingController()
 SearchBookingController()
 Booking(get_db_connection)
 PlatformManagementController()
+Report(app,get_db_connection)
 #User & UserProfile
 user_routes(app)
 register_login_routes(app)
 logout_routes(app)
 profile_routes(app)
-
-@app.route("/dashboard_platform")
-def platform_dashboard():
-    return render_template("dashboard_platform.html")
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000/")
