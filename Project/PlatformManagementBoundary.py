@@ -6,7 +6,7 @@ def register_routes7(app):
     @app.route("/platform/home")
     def platform_home():
         user = session.get("user")
-        print("DEBUG: session user =", user)  # Add this line
+        #print("DEBUG: session user =", user)  # Add this line
         if not user:
             return redirect('/')
         user_id = user.get("UserId")
