@@ -36,7 +36,7 @@ class HomeOwner:
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT DISTINCT c.userid, c.name AS cleaner_name, s.name AS service_name,
-                            s.price, s.duration
+                           s.price, s.duration, CONCAT('$', s.price) as formatted_price
             FROM cleaner c
             JOIN cleanerservice cs ON c.UserId = cs.UserId
             JOIN service s ON cs.ServiceId = s.ServiceId
