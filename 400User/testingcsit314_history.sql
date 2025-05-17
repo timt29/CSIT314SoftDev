@@ -16,27 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userprofile`
+-- Table structure for table `history`
 --
 
-DROP TABLE IF EXISTS `userprofile`;
+DROP TABLE IF EXISTS `history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userprofile` (
-  `Role` varchar(50) NOT NULL,
-  `Description` text,
-  PRIMARY KEY (`Role`)
+CREATE TABLE `history` (
+  `HomeOwnerId` int NOT NULL,
+  `CleanerId` int NOT NULL,
+  `ServiceID` int NOT NULL,
+  `Date_Used` date NOT NULL,
+  PRIMARY KEY (`HomeOwnerId`,`CleanerId`,`ServiceID`),
+  KEY `fk2_idx` (`CleanerId`),
+  KEY `fk3_idx` (`ServiceID`),
+  CONSTRAINT `fk1` FOREIGN KEY (`HomeOwnerId`) REFERENCES `homeowner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk2` FOREIGN KEY (`CleanerId`) REFERENCES `cleaner` (`UserId`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk3` FOREIGN KEY (`ServiceID`) REFERENCES `service` (`ServiceId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userprofile`
+-- Dumping data for table `history`
 --
 
-LOCK TABLES `userprofile` WRITE;
-/*!40000 ALTER TABLE `userprofile` DISABLE KEYS */;
-INSERT INTO `userprofile` VALUES ('Admin',NULL),('Admin User','Manages platform users, configurations, and policies!!!!'),('Cleaner','Responsible for cleaning tasks in various homes!!'),('Helper','Help the Home Owner somehow!!!!!11'),('Home Owner','Owner of property using the service to hire cleaners.'),('Platform Management','Oversees the platform technical and operational aspects.');
-/*!40000 ALTER TABLE `userprofile` ENABLE KEYS */;
+LOCK TABLES `history` WRITE;
+/*!40000 ALTER TABLE `history` DISABLE KEYS */;
+INSERT INTO `history` VALUES (301,201,1,'2022-10-15'),(302,202,2,'2022-10-16'),(303,203,3,'2022-10-17'),(304,204,4,'2022-10-18'),(305,205,5,'2022-10-19'),(306,206,6,'2022-10-15'),(307,207,7,'2022-10-16'),(308,208,9,'2022-10-17'),(309,209,1,'2022-10-18'),(310,210,2,'2022-10-19');
+/*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -48,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-16 23:36:12
+-- Dump completed on 2025-05-16 23:36:11
