@@ -16,7 +16,7 @@ def register_routes2(app):
         if not homeowner:
             return "homeowner not found", 404
 
-        cleaners = ViewCleanerServicesController.get_all_cleaners_with_services()
+        cleaners = ViewCleanerServicesController.get_cleaners()
         services = ViewCleanerServicesController.get_all_services()
 
         return render_template("HomeOwnerPg.html", cleaners=cleaners, services=services,
