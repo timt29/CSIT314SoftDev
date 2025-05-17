@@ -7,11 +7,12 @@ def register_routes7(app):
     def platform_home():
         user = session.get("user")
         print("DEBUG: session user =", user)  # Add this line
-        if not user or user.get("role") != "Platform Management":
+        if not user:
             return redirect('/')
-        
-        stats = PlatformManagementController.get_platform_stats()
-        return render_template("dashboard_platform.html", stats=stats)
+        user_id = user.get("UserId")
+        PM = PlatformManagementController.get_PM_ID(user_id)
+
+        return render_template("dashboard_platform.html", PM=PM["name"])
 
     @app.route('/api/report/cleaner_popularity')
     def api_cleaner_popularity():

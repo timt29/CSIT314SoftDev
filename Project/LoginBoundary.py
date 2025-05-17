@@ -23,7 +23,7 @@ def register_login_routes(app):
                 elif role == "Home Owner":
                     return redirect(url_for("home"))
                 elif role == "Platform Management":
-                    return redirect(url_for("platform_dashboard"))
+                    return redirect(url_for("platform_home"))
             else:
                 return render_template("login.html", error="Wrong Profile, Email or Password or Suspended")
 

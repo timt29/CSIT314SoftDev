@@ -16,7 +16,15 @@ class Report:
         self.get_db_connection = db_connector
        # self.register_routes()
     
-    @staticmethod
+    def getPM_id(user_id):
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT name FROM users WHERE userid = %s", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result
+
     def get_cleaner_popularity_report():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -37,7 +45,6 @@ class Report:
         conn.close()
         return report
 
-    @staticmethod
     def get_cleaner_service_usage_report():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
