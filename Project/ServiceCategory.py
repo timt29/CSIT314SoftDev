@@ -31,7 +31,7 @@ class ServiceCategory:
             conn.close()
     
     @staticmethod
-    def create_servicecategory(CategoryName):
+    def createServiceCategory(CategoryName):
         conn = ServiceCategory.get_db_connection()
         try:
             cursor = conn.cursor()
@@ -50,7 +50,7 @@ class ServiceCategory:
             conn.close()
 
     @staticmethod
-    def update_service_category(CategoryName):
+    def updateServiceCategory(CategoryName):
         conn = ServiceCategory.get_db_connection()
         try:
             cursor = conn.cursor()
@@ -69,7 +69,7 @@ class ServiceCategory:
             conn.close()
 
     @staticmethod
-    def delete_by_category(CategoryName):
+    def deleteServiceCategory(CategoryName):
         conn = ServiceCategory.get_db_connection()
         try:
             cursor = conn.cursor()

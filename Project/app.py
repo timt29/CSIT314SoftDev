@@ -23,6 +23,13 @@ from SearchBookingController import SearchBookingController
 from Booking import Booking
 from PlatformManagementController import PlatformManagementController
 from PlatformManagementBoundary import register_routes7
+from ServiceCategory import ServiceCategory
+from ServiceCategoryBoundary import register_service_category_routes
+from CreateServiceCategoryController import CreateServiceCategoryController
+from DeleteServiceCategoryController import DeleteServiceCategoryController
+from UpdateServiceCategoryController import UpdateServiceCategoryController
+from SearchServiceCategoryController import SearchServiceCategoryController
+from ViewServiceCategoryController import ViewServiceCategoryController
 from Report import Report
 #User & UserProfile
 from LoginBoundary import register_login_routes
@@ -71,6 +78,7 @@ user_routes(app)
 register_login_routes(app)
 logout_routes(app)
 profile_routes(app)
+register_service_category_routes(app)
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000/")
