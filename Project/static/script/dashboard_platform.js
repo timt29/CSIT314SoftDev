@@ -60,6 +60,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --- Service Category Search (for dashboard_platform.html) ---
+document.addEventListener('DOMContentLoaded', function() {
+    attachCategorySearchListeners();
+});
+
+function attachCategorySearchListeners() {
+    const searchForm = document.getElementById('searchCategoryForm');
+    const searchInput = document.getElementById('searchCategoryInput');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            loadCategoryTable(query);
+        });
+    }
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.trim();
+            loadCategoryTable(query);
+        });
+    }
+}
+
 // test code for service category management
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
@@ -72,9 +95,13 @@ async function loadCategoryTable(searchQuery = "") {
 
     let rows = "";
     categories.forEach(category => {
+        const services = category.Services && category.Services.length
+            ? category.Services.join(", ")
+            : "No services";
         rows += `
             <tr>
                 <td>${category.CategoryName}</td>
+                <td>${services}</td>
                 <td>
                     <button class="action-button" onclick="showUpdateCategoryForm('${category.CategoryName}')">Update</button>
                     <button class="suspend-button" onclick="deleteServiceCategory('${category.CategoryName}')">Delete</button>
@@ -83,7 +110,7 @@ async function loadCategoryTable(searchQuery = "") {
     });
 
     if (categories.length === 0) {
-        rows = `<tr><td colspan="2">No service categories found.</td></tr>`;
+        rows = `<tr><td colspan="3">No service categories found.</td></tr>`;
     }
 
     const tableBody = document.querySelector("#category-table tbody");
@@ -132,8 +159,42 @@ async function createServiceCategory() {
 
 // Show the update form for a category
 function showUpdateCategoryForm(categoryName) {
-    document.getElementById('modal-category-name').value = categoryName;
-    document.getElementById('updateCategoryModal').style.display = 'block';
+    document.getElementById('content').innerHTML = `
+        <h3>Update Service Category</h3>
+        <form id="update-category-form">
+            <div class="form-group">
+                <label for="update-category-name">New Category Name:</label>
+                <input id="update-category-name" type="text" value="${categoryName}" required>
+            </div>
+            <button type="submit">Update</button>
+            <button type="button" id="cancel-update-btn">Cancel</button>
+        </form>
+    `;
+
+    document.getElementById('update-category-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const newName = document.getElementById('update-category-name').value.trim();
+        if (!newName) {
+            alert("Please enter a new category name.");
+            return;
+        }
+        const response = await fetch(`/api/service_categories/${encodeURIComponent(categoryName)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ CategoryName: newName })
+        });
+        if (response.ok) {
+            alert("Service category updated successfully!");
+            showCategoryTab('view');
+        } else {
+            const error = await response.json();
+            alert(`Failed to update category: ${error.error || error.message}`);
+        }
+    });
+
+    document.getElementById('cancel-update-btn').addEventListener('click', function() {
+        showCategoryTab('view');
+    });
 }
 
 // Update a service category
@@ -184,17 +245,22 @@ async function showCategoryTab(tab) {
     if (tab === "view") {
         document.getElementById('content').innerHTML = `
             <h3>Manage Service Categories</h3>
-            <input type="text" id="category-search" placeholder="Search by category name" oninput="searchCategories()" />
+            <form id="searchCategoryForm" style="margin-bottom: 10px;">
+                <input type="text" id="searchCategoryInput" placeholder="Enter category name..." />
+                <button type="submit">Search</button>
+            </form>
             <table id="category-table">
                 <thead>
                     <tr>
                         <th>Category Name</th>
+                        <th>Services</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         `;
+        attachCategorySearchListeners();
         loadCategoryTable();
     } else if (tab === "create") {
         renderCreateCategoryForm();

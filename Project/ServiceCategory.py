@@ -85,18 +85,21 @@ class ServiceCategory:
             conn.close()
 
     @staticmethod
-    def searchcategory(query):
+    def searchcategory(search_query=""):
         conn = ServiceCategory.get_db_connection()
         try:
             cursor = conn.cursor(dictionary=True)
-            if query:
-                cursor.execute("""
-                    SELECT * FROM ServiceCategory
-                    WHERE CategoryName LIKE %s
-                """, (f"%{query}%",))
+            if search_query:
+                cursor.execute("SELECT CategoryId, CategoryName FROM ServiceCategory WHERE CategoryName LIKE %s", (f"%{search_query}%",))
             else:
-                cursor.execute("SELECT * FROM ServiceCategory")
-            return cursor.fetchall()
+                cursor.execute("SELECT CategoryId, CategoryName FROM ServiceCategory")
+            categories = cursor.fetchall()
+            # For each category, fetch its services using category_id
+            for category in categories:
+                cursor.execute("SELECT name FROM Service WHERE CategoryId = %s", (category['CategoryId'],))
+                services = cursor.fetchall()
+                category['Services'] = [s['name'] for s in services]
+            return categories
         finally:
             cursor.close()
             conn.close()

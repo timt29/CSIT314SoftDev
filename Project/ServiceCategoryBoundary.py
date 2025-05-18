@@ -22,7 +22,8 @@ def register_service_category_routes(app):
     # View all service categories (with optional search)
     @app.route("/api/service_categories", methods=["GET"])
     def get_service_categories():
-        search_query = request.args.get("search")
+        search_query = request.args.get("search", "")
+        search_query = search_query.strip() if search_query else ""
         categories = ServiceCategory.searchcategory(search_query)
         return jsonify(categories)
 
