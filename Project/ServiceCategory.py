@@ -50,13 +50,13 @@ class ServiceCategory:
             conn.close()
 
     @staticmethod
-    def updateServiceCategory(CategoryName):
+    def updateServiceCategory(oldCategoryName, newCategoryName):
         conn = ServiceCategory.get_db_connection()
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE ServiceCategory SET CategoryName = %s",
-                (CategoryName)
+                "UPDATE ServiceCategory SET CategoryName = %s WHERE CategoryName = %s",
+                (newCategoryName, oldCategoryName)
             )
             conn.commit()
             if cursor.rowcount == 0:

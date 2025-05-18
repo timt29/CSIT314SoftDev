@@ -28,20 +28,20 @@ def register_service_category_routes(app):
 
     # Update service category
     @app.route("/api/service_categories/<string:CategoryName>", methods=["PUT"])
-    def update_service_category(CategoryName):
+    def updateServiceCategory(CategoryName):
         data = request.json
         new_name = data.get("CategoryName")
 
         if not new_name:
             return jsonify({"error": "Missing new CategoryName"}), 400
 
-        result, status = ServiceCategory.update_service_category(new_name)
+        result, status = ServiceCategory.updateServiceCategory(CategoryName, new_name)
         return jsonify(result), status
 
     # Delete service category
     @app.route("/api/service_categories/<string:CategoryName>", methods=["DELETE"])
-    def delete_service_category(CategoryName):
-        result, status = ServiceCategory.delete_by_category(CategoryName)
+    def deleteServiceCategory(CategoryName):
+        result, status = ServiceCategory.deleteServiceCategory(CategoryName)
         return jsonify(result), status
 
     # Search service categories (alternate path)
@@ -50,3 +50,12 @@ def register_service_category_routes(app):
         search_query = request.args.get("search", "").strip()
         categories = ServiceCategory.searchcategory(search_query)
         return jsonify(categories)
+
+    # Update service category (alternate path)
+    @app.route('/update_service_category', methods=['POST'])
+    def update_service_category():
+        data = request.get_json()
+        old_name = data.get('oldCategoryName')
+        new_name = data.get('newCategoryName')
+        result, status = UpdateServiceCategoryController.updateServiceCategory(old_name, new_name)
+        return jsonify(result), status
