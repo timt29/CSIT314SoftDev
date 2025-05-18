@@ -37,7 +37,7 @@ class ServiceCategory:
             cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO ServiceCategory (CategoryName) VALUES (%s)",
-                (CategoryName)
+                (CategoryName,)
             )
             conn.commit()
             return {"message": "Service Category created successfully"}, 201

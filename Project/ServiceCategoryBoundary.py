@@ -16,7 +16,7 @@ def register_service_category_routes(app):
         if not category_name:
             return jsonify({"error": "Missing CategoryName"}), 400
 
-        result = ServiceCategory.create_servicecategory(category_name)
+        result = ServiceCategory.createServiceCategory(category_name)
         return jsonify({"message": "Service category created successfully"}), 201
 
     # View all service categories (with optional search)
