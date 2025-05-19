@@ -18,18 +18,20 @@ class Booking:
 
         query = """
             SELECT b.BookingId,
-                b.Date_Used,
-                s.Name AS service_name,
-                s.price AS price,
-                c.Name AS cleaner_name,
-                b.ServiceId,
-                b.HomeOwnerId,
-                b.CleanerId
+            b.Date_Used,
+            s.Name AS service_name,
+            s.Price AS price,
+            c.Name AS cleaner_name,
+            h.Name AS homeowner_name,
+            b.ServiceId,
+            b.HomeOwnerId,
+            b.CleanerId
             FROM booking b
             JOIN service s ON b.ServiceId = s.ServiceId
             JOIN cleaner c ON b.CleanerId = c.UserId
+            JOIN homeowner h ON b.HomeOwnerId = h.UserId
             WHERE b.CleanerId = %s
-        """
+                """
         params = [cleaner_id]
 
         if service_id:

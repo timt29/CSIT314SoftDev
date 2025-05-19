@@ -87,6 +87,7 @@
     {% if bookings %}
       {% for booking in bookings %} 
         <div class="booking-card">
+          <div><strong>Homeowner:</strong> {{ booking.homeowner_name }}</div>
           <div><strong>Cleaner:</strong> {{ booking.cleaner_name }}</div> 
           <div><strong>Service:</strong> {{ booking.service_name }}</div> 
           <div><strong>Price:</strong> ${{ booking.price }}</div> 
